@@ -1,0 +1,9 @@
+{
+  "name": "typescript-drag-drop",
+  "version": "0.0.0",
+  "description": "Simple drag and drop framework for TypeScript",
+  "main": "dist/main.js",
+  "dependencies": {},
+  "devDependencies": {}
+}
+
