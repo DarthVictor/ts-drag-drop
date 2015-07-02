@@ -124,7 +124,7 @@ class DragAvatar {
   protected _shiftX: number;
   protected _shiftY: number;
 
-  constructor(dragZone: any, dragElem: any) {
+  constructor(dragZone, dragElem) {
     this._dragZone = dragZone;
     this._dragZoneElem = dragElem;
     this._elem = dragElem;
@@ -137,7 +137,7 @@ class DragAvatar {
    * @param downY Координата Y нажатия мыши
    * @param event Текущее событие мыши
    */
-  initFromEvent(downX: number, downY: number, event: Event) {
+  protected initFromEvent(downX, downY, event) {
     /* override */
   }
 
@@ -145,7 +145,7 @@ class DragAvatar {
    * Возвращает информацию о переносимом элементе для DropTarget
    * @param event
    */
-  getDragInfo = function(event: Event) {
+  getDragInfo = function(event) {
     // тут может быть еще какая-то информация, необходимая для обработки конца или процесса переноса
     return {
       elem: this._elem,
@@ -167,7 +167,7 @@ class DragAvatar {
    * и записывает текущий элемент под this._elem в _currentTargetElem
    * @param event
    */
-  onDragMove(event: any) {
+  protected onDragMove(event) {
     this._elem.style.left = event.pageX - this._shiftX + 'px';
     this._elem.style.top = event.pageY - this._shiftY + 'px';
 
@@ -178,14 +178,14 @@ class DragAvatar {
    * Действия с аватаром, когда перенос не удался
    * Например, можно вернуть элемент обратно или уничтожить
    */
-  onDragCancel() {
+  protected onDragCancel() {
     /* override */
   }
 
   /**
    * Действия с аватаром после успешного переноса
    */
-  onDragEnd () {
+  protected onDragEnd () {
     /* override */
   }
 }

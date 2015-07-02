@@ -46,7 +46,7 @@ TreeDragAvatarOld.prototype.onDragEnd = function() {
 
 
 class TreeDragAvatar extends DragAvatar{
-  protected initFromEvent(downX: number, downY: number, event: Event) {
+  protected initFromEvent(downX, downY, event) {
     if (event.target.tagName != 'SPAN') return false;
 
     this._dragZoneElem = event.target;

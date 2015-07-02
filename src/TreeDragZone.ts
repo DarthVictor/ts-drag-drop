@@ -1,11 +1,17 @@
 declare function extend(Child, Parent) : void
 
-function TreeDragZone(elem) {
+function TreeDragZoneOld(elem) {
     DragZone.apply(this, arguments);
 }
 
-extend(TreeDragZone, DragZone);
+extend(TreeDragZoneOld, DragZoneOld);
 
-TreeDragZone.prototype._makeAvatar = function() {
+TreeDragZoneOld.prototype._makeAvatar = function() {
     return new TreeDragAvatar(this, this._elem);
 };
+
+class TreeDragZone extends DragZone{
+  protected _makeAvatar() {
+    return new TreeDragAvatar(this, this._elem);
+  }
+}
