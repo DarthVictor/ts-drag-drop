@@ -2,11 +2,10 @@
  * Created by DarthVictor on 27.06.2015.
  * https://learn.javascript.ru/drag-and-drop-plus
  */
-var dragManager = DragManager.getInstace();
 
 class DragManager {
   private static _instance: DragManager = new DragManager();
-  public static getInstace(){
+  public static getInstance(){
     return this._instance;
   }
   protected dragZone: any;
@@ -131,4 +130,6 @@ class DragManager {
   }
 
 }
+var dragManager = DragManager.getInstance();
+
 

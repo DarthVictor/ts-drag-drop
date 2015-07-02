@@ -10,7 +10,7 @@ class TreeDragAvatar extends DragAvatar{
     if (event.target.tagName != 'SPAN') return false;
 
     this._dragZoneElem = event.target;
-    var elem = this._elem = this._dragZoneElem.cloneNode(true);
+    var elem = this._elem = <HTMLElement>this._dragZoneElem.cloneNode(true);
     elem.className = 'avatar';
 
     // создать вспомогательные свойства shiftX/shiftY
@@ -20,7 +20,7 @@ class TreeDragAvatar extends DragAvatar{
 
     // инициировать начало переноса
     document.body.appendChild(elem);
-    elem.style.zIndex = 9999;
+    elem.style.zIndex = '9999';
     elem.style.position = 'absolute';
 
     return true;

@@ -67,7 +67,7 @@ var DragAvatar = (function () {
      * @param event Текущее событие мыши
      */
     DragAvatar.prototype.initFromEvent = function (downX, downY, event) {
-        /* override */
+        throw new TypeError('Unimplemented method');
     };
     /**
      * Возвращает текущий самый глубокий DOM-элемент под this._elem
@@ -106,7 +106,6 @@ var DragAvatar = (function () {
  * Created by DarthVictor on 27.06.2015.
  * https://learn.javascript.ru/drag-and-drop-plus
  */
-var dragManager = DragManager.getInstace();
 var DragManager = (function () {
     function DragManager() {
         document.ondragstart = function () {
@@ -123,7 +122,7 @@ var DragManager = (function () {
             return self.onMouseDown(e);
         };
     }
-    DragManager.getInstace = function () {
+    DragManager.getInstance = function () {
         return this._instance;
     };
     DragManager.prototype.onMouseDown = function (e) {
@@ -209,6 +208,7 @@ var DragManager = (function () {
     DragManager._instance = new DragManager();
     return DragManager;
 })();
+var dragManager = DragManager.getInstance();
 
 /**
  * Created by DarthVictor on 27.06.2015.
@@ -376,7 +376,7 @@ var TreeDragAvatar = (function (_super) {
         this._shiftY = downY - coords.top;
         // инициировать начало переноса
         document.body.appendChild(elem);
-        elem.style.zIndex = 9999;
+        elem.style.zIndex = '9999';
         elem.style.position = 'absolute';
         return true;
     };

@@ -13,25 +13,25 @@ declare function getElementUnderClientXY(elem, clientX, clientY) : HTMLElement
  */
 class DragAvatar {
   /** "родительская" зона переноса */
-  protected _dragZone: any;
+  protected _dragZone: DragZone;
 
   /**
    * подэлемент родительской зоны, к которому относится аватар
    * по умолчанию - элемент, соответствующий всей зоне
    * может быть уточнен в initFromEvent
    */
-  protected _dragZoneElem: any;
+  protected _dragZoneElem: HTMLElement;
 
   /**
    * Сам элемент аватара, который будет носиться по экрану.
    * Инициализуется в initFromEvent
    */
-  protected _elem: any;
+  protected _elem: HTMLElement;
 
   /**
    * Текущий элемент под this._elem, обновление проиходит в методе onDragMove
    */
-  protected _currentTargetElem: any;
+  protected _currentTargetElem: HTMLElement;
 
   /**
    * вспомогательные свойства, которые хранят координаты точки первого нажатия при начали переноса,
@@ -40,7 +40,7 @@ class DragAvatar {
   protected _shiftX: number;
   protected _shiftY: number;
 
-  constructor(dragZone, dragElem) {
+  constructor(dragZone: DragZone, dragElem: HTMLElement) {
     this._dragZone = dragZone;
     this._dragZoneElem = dragElem;
     this._elem = dragElem;
@@ -53,8 +53,9 @@ class DragAvatar {
    * @param downY Координата Y нажатия мыши
    * @param event Текущее событие мыши
    */
-  protected initFromEvent(downX, downY, event) {
+  protected initFromEvent(downX: number, downY: number, event: Event) {
     /* override */
+    throw new TypeError('Unimplemented method');
   }
 
   /**
