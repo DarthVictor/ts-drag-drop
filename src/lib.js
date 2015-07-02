@@ -27,17 +27,9 @@ function getElementUnderClientXY(elem, clientX, clientY) {
 
     elem.style.display = display;
 
-    if (!target || target == document) { // это бывает при выносе за границы окна
-        target = document.body; // поправить значение, чтобы был именно элемент
+    if (!target || target == document) { // СЌС‚Рѕ Р±С‹РІР°РµС‚ РїСЂРё РІС‹РЅРѕСЃРµ Р·Р° РіСЂР°РЅРёС†С‹ РѕРєРЅР°
+        target = document.body; // РїРѕРїСЂР°РІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ, С‡С‚РѕР±С‹ Р±С‹Р» РёРјРµРЅРЅРѕ СЌР»РµРјРµРЅС‚
     }
 
     return target;
-}
-
-function extend(Child, Parent) {
-    function F() {}
-    F.prototype = Parent.prototype
-    Child.prototype = new F()
-    Child.prototype.constructor = Child
-    Child.parent = Parent.prototype
 }

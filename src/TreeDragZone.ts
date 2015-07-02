@@ -1,14 +1,7 @@
-declare function extend(Child, Parent) : void
-
-function TreeDragZoneOld(elem) {
-    DragZone.apply(this, arguments);
-}
-
-extend(TreeDragZoneOld, DragZoneOld);
-
-TreeDragZoneOld.prototype._makeAvatar = function() {
-    return new TreeDragAvatar(this, this._elem);
-};
+/**
+ * Created by DarthVictor on 27.06.2015.
+ * https://learn.javascript.ru/drag-and-drop-plus
+ */
 
 class TreeDragZone extends DragZone{
   protected _makeAvatar() {
