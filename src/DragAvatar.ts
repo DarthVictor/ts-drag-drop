@@ -53,7 +53,7 @@ class DragAvatar {
    * @param downY Координата Y нажатия мыши
    * @param event Текущее событие мыши
    */
-  protected initFromEvent(downX: number, downY: number, event: Event) {
+  protected initFromEvent(downX: number, downY: number, event: Event) : boolean {
     /* override */
     throw new TypeError('Unimplemented method');
   }
@@ -62,20 +62,20 @@ class DragAvatar {
    * Возвращает информацию о переносимом элементе для DropTarget
    * @param event
    */
-  getDragInfo = function(event) {
+  getDragInfo(event: MouseEvent) : DragInfo{
     // тут может быть еще какая-то информация, необходимая для обработки конца или процесса переноса
-    return {
-      elem: this._elem,
-      dragZoneElem: this._dragZoneElem,
-      dragZone: this._dragZone
-    };
+    return new DragInfo(
+      this._elem,
+      this._dragZoneElem,
+      this._dragZone
+    );
   }
 
   /**
    * Возвращает текущий самый глубокий DOM-элемент под this._elem
    * Приватное свойство _currentTargetElem обновляется при каждом передвижении
    */
-  getTargetElem() {
+  getTargetElem() : HTMLElement {
     return this._currentTargetElem;
   }
 
@@ -84,10 +84,9 @@ class DragAvatar {
    * и записывает текущий элемент под this._elem в _currentTargetElem
    * @param event
    */
-  protected onDragMove(event) {
+  protected onDragMove(event: MouseEvent) : void {
     this._elem.style.left = event.pageX - this._shiftX + 'px';
     this._elem.style.top = event.pageY - this._shiftY + 'px';
-
     this._currentTargetElem = getElementUnderClientXY(this._elem, event.clientX, event.clientY);
   }
 
@@ -95,14 +94,31 @@ class DragAvatar {
    * Действия с аватаром, когда перенос не удался
    * Например, можно вернуть элемент обратно или уничтожить
    */
-  protected onDragCancel() {
+  protected onDragCancel() : void {
     /* override */
+    throw new TypeError('Unimplemented method');
   }
 
   /**
    * Действия с аватаром после успешного переноса
    */
-  protected onDragEnd () {
+  protected onDragEnd() : void {
     /* override */
+    throw new TypeError('Unimplemented method');
+  }
+}
+
+/**
+ * Класс для хранения информации, необходимой для обработки конца или процесса переноса
+ */
+class DragInfo{
+  elem: HTMLElement;
+  dragZoneElem: HTMLElement;
+  dragZone: DragZone;
+
+  constructor(elem: HTMLElement, dragZoneElem: HTMLElement, dragZone: DragZone){
+    this.elem = elem;
+    this.dragZoneElem = dragZoneElem;
+    this.dragZone = dragZone;
   }
 }

@@ -6,11 +6,11 @@
 declare function getCoords(elem) : any
 
 class TreeDragAvatar extends DragAvatar{
-  protected initFromEvent(downX, downY, event) {
-    if (event.target.tagName != 'SPAN') return false;
+  protected initFromEvent(downX: number, downY: number, event: MouseEvent) : boolean{
+    if (( <HTMLElement> event.target).tagName != 'SPAN') return false;
 
-    this._dragZoneElem = event.target;
-    var elem = this._elem = <HTMLElement>this._dragZoneElem.cloneNode(true);
+    this._dragZoneElem =  <HTMLElement> event.target;
+    var elem = this._elem = <HTMLElement> this._dragZoneElem.cloneNode(true);
     elem.className = 'avatar';
 
     // создать вспомогательные свойства shiftX/shiftY
@@ -29,18 +29,18 @@ class TreeDragAvatar extends DragAvatar{
   /**
    * Вспомогательный метод
    */
-  private _destroy () {
+  private _destroy () : void {
     this._elem.parentNode.removeChild(this._elem);
   }
 
   /**
    * При любом исходе переноса элемент-клон больше не нужен
    */
-  protected onDragCancel() {
+  protected onDragCancel() : void {
     this._destroy();
   }
 
-  protected onDragEnd() {
+  protected onDragEnd() : void {
     this._destroy();
   }
 

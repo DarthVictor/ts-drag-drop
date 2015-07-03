@@ -43,18 +43,6 @@ function getElementUnderClientXY(elem, clientX, clientY) {
  */
 var DragAvatar = (function () {
     function DragAvatar(dragZone, dragElem) {
-        /**
-         * Возвращает информацию о переносимом элементе для DropTarget
-         * @param event
-         */
-        this.getDragInfo = function (event) {
-            // тут может быть еще какая-то информация, необходимая для обработки конца или процесса переноса
-            return {
-                elem: this._elem,
-                dragZoneElem: this._dragZoneElem,
-                dragZone: this._dragZone
-            };
-        };
         this._dragZone = dragZone;
         this._dragZoneElem = dragElem;
         this._elem = dragElem;
@@ -68,6 +56,18 @@ var DragAvatar = (function () {
      */
     DragAvatar.prototype.initFromEvent = function (downX, downY, event) {
         throw new TypeError('Unimplemented method');
+    };
+    /**
+     * Возвращает информацию о переносимом элементе для DropTarget
+     * @param event
+     */
+    DragAvatar.prototype.getDragInfo = function (event) {
+        // тут может быть еще какая-то информация, необходимая для обработки конца или процесса переноса
+        return {
+            elem: this._elem,
+            dragZoneElem: this._dragZoneElem,
+            dragZone: this._dragZone
+        };
     };
     /**
      * Возвращает текущий самый глубокий DOM-элемент под this._elem
