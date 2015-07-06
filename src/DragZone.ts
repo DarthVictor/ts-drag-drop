@@ -3,17 +3,22 @@
  * https://learn.javascript.ru/drag-and-drop-plus
  */
 
+/* Вспомогательный интерфейс */
+interface HTMLElementWithDragZone extends HTMLElement{
+  dragZone: DragZone;
+}
+
 /**
  * Зона, из которой можно переносить объекты
  * Умеет обрабатывать начало переноса на себе и создавать "аватар"
  */
 class DragZone {
-  protected _elem: any;
+  protected _elem: HTMLElementWithDragZone;
 
   /*
    * @param elem DOM-элемент, к которому привязана зона
    */
-  constructor(elem){
+  constructor(elem: HTMLElementWithDragZone){
     elem.dragZone = this;
     this._elem = elem;
   }
@@ -22,8 +27,9 @@ class DragZone {
    * Создать аватар, соответствующий зоне.
    * У разных зон могут быть разные типы аватаров
    */
-  protected _makeAvatar() {
+  protected _makeAvatar() : DragAvatar{
     /* override */
+    throw new TypeError('Unimplemented method');
   }
 
   /**
@@ -37,9 +43,9 @@ class DragZone {
    *
    * @return аватар или false, если захватить с данной точки ничего нельзя
    */
-  protected onDragStart(downX, downY, event) {
+  protected onDragStart(downX: number, downY: number, event: MouseEvent) {
 
-    var avatar:any = this._makeAvatar();
+    var avatar: DragAvatar = this._makeAvatar();
 
     if (!avatar.initFromEvent(downX, downY, event)) {
       return false;

@@ -53,7 +53,7 @@ class DragAvatar {
    * @param downY Координата Y нажатия мыши
    * @param event Текущее событие мыши
    */
-  protected initFromEvent(downX: number, downY: number, event: Event) : boolean {
+  public initFromEvent(downX: number, downY: number, event: Event) : boolean {
     /* override */
     throw new TypeError('Unimplemented method');
   }
