@@ -43,7 +43,7 @@ class DragZone {
    *
    * @return аватар или false, если захватить с данной точки ничего нельзя
    */
-  protected onDragStart(downX: number, downY: number, event: MouseEvent) : DragAvatar {
+  public onDragStart(downX: number, downY: number, event: MouseEvent) : DragAvatar {
 
     var avatar: DragAvatar = this._makeAvatar();
 

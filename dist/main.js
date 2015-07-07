@@ -81,6 +81,7 @@ var DragAvatar = (function () {
         this._elem.style.left = event.pageX - this._shiftX + 'px';
         this._elem.style.top = event.pageY - this._shiftY + 'px';
         this._currentTargetElem = getElementUnderClientXY(this._elem, event.clientX, event.clientY);
+        this._currentTargetElem.dropTarget = null;
     };
     /**
      * Действия с аватаром, когда перенос не удался
@@ -204,8 +205,8 @@ var DragManager = (function () {
     DragManager.prototype.findDropTarget = function (event) {
         // получить элемент под аватаром
         var elem = this.avatar.getTargetElem();
-        while (elem != document && !elem.dropTarget) {
-            elem = elem.parentNode;
+        while (elem !== document && !elem.dropTarget) {
+            elem = elem.parentElement;
         }
         if (!elem.dropTarget) {
             return null;

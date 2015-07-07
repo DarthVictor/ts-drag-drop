@@ -8,11 +8,11 @@ class DragManager {
   public static getInstance(){
     return this._instance;
   }
-  protected dragZone: any;
-  protected avatar: any;
-  protected dropTarget: any;
-  protected downX: any;
-  protected downY: any;
+  protected dragZone: DragZone;
+  protected avatar: DragAvatar;
+  protected dropTarget: DropTarget;
+  protected downX: number;
+  protected downY: number;
 
   constructor(){
     document.ondragstart = function() {
@@ -43,7 +43,7 @@ class DragManager {
     return false;
   }
 
-  protected  onMouseMove(e) {
+  protected onMouseMove(e) {
     if (!this.dragZone) return; // элемент не зажат
 
     if (!this.avatar) { // элемент нажат, но пока не начали его двигать
@@ -108,7 +108,7 @@ class DragManager {
 
   protected findDragZone(event) {
     var elem = event.target;
-    while (elem != document && !elem.dragZone) {
+    while (elem != <Node> document && !elem.dragZone) {
       elem = elem.parentNode;
     }
     return elem.dragZone;
@@ -118,8 +118,8 @@ class DragManager {
     // получить элемент под аватаром
     var elem = this.avatar.getTargetElem();
 
-    while (elem != document && !elem.dropTarget) {
-      elem = elem.parentNode;
+    while (elem !== <Node> document && !elem.dropTarget) {
+      elem = <HTMLElementWithDropTarget>elem.parentElement;
     }
 
     if (!elem.dropTarget) {

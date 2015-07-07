@@ -31,7 +31,7 @@ class DragAvatar {
   /**
    * Текущий элемент под this._elem, обновление проиходит в методе onDragMove
    */
-  protected _currentTargetElem: HTMLElement;
+  protected _currentTargetElem: HTMLElementWithDropTarget;
 
   /**
    * вспомогательные свойства, которые хранят координаты точки первого нажатия при начали переноса,
@@ -75,7 +75,7 @@ class DragAvatar {
    * Возвращает текущий самый глубокий DOM-элемент под this._elem
    * Приватное свойство _currentTargetElem обновляется при каждом передвижении
    */
-  getTargetElem() : HTMLElement {
+  public getTargetElem() : HTMLElementWithDropTarget {
     return this._currentTargetElem;
   }
 
@@ -84,10 +84,11 @@ class DragAvatar {
    * и записывает текущий элемент под this._elem в _currentTargetElem
    * @param event
    */
-  protected onDragMove(event: MouseEvent) : void {
+  public onDragMove(event: MouseEvent) : void {
     this._elem.style.left = event.pageX - this._shiftX + 'px';
     this._elem.style.top = event.pageY - this._shiftY + 'px';
-    this._currentTargetElem = getElementUnderClientXY(this._elem, event.clientX, event.clientY);
+    this._currentTargetElem = <HTMLElementWithDropTarget> getElementUnderClientXY(this._elem, event.clientX, event.clientY);
+    this._currentTargetElem.dropTarget = null;
   }
 
   /**

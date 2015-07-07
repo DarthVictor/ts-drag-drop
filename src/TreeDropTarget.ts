@@ -23,10 +23,10 @@ class TreeDropTarget extends  DropTarget{
     var elem = target;
     while (elem) {
       if (elem == elemToMove) return; // попытка перенести родителя в потомка
-      elem = elem.parentElement;
+      elem = <HTMLElementWithDropTarget> elem.parentElement;
     }
 
-    return <HTMLElementWithDropTarget>target;
+    return target;
   }
 
   public onDragEnd(avatar: DragAvatar, event: MouseEvent) : void {
