@@ -94,7 +94,7 @@ class DragAvatar {
    * Действия с аватаром, когда перенос не удался
    * Например, можно вернуть элемент обратно или уничтожить
    */
-  protected onDragCancel() : void {
+  public onDragCancel() : void {
     /* override */
     throw new TypeError('Unimplemented method');
   }
@@ -102,7 +102,7 @@ class DragAvatar {
   /**
    * Действия с аватаром после успешного переноса
    */
-  protected onDragEnd() : void {
+  public onDragEnd() : void {
     /* override */
     throw new TypeError('Unimplemented method');
   }

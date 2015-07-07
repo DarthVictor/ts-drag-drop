@@ -3,18 +3,23 @@
  * https://learn.javascript.ru/drag-and-drop-plus
  */
 
+/* Вспомогательный интерфейс */
+interface HTMLElementWithDropTarget extends HTMLElement{
+  dropTarget: DropTarget;
+}
+
 /**
  * Зона, в которую объекты можно класть
  * Занимается индикацией передвижения по себе, добавлением в себя
  */
 class DropTarget{
-  protected _elem: any;
+  protected _elem: HTMLElementWithDropTarget;
   /**
    * Подэлемент, над которым в настоящий момент находится аватар
    */
-  protected _targetElem: any;
+  protected _targetElem: HTMLElementWithDropTarget;
 
-  constructor(elem) {
+  constructor(elem: HTMLElementWithDropTarget) {
     elem.dropTarget = this;
     this._elem = elem;
     this._targetElem = null;
@@ -25,7 +30,7 @@ class DropTarget{
    *
    * @return DOM-элемент, на который можно положить или undefined
    */
-  protected _getTargetElem(avatar, event) {
+  protected _getTargetElem(avatar: DragAvatar, event: MouseEvent) : HTMLElementWithDropTarget {
     return this._elem; // по-умолчанию сам элемент
   }
 
@@ -33,23 +38,25 @@ class DropTarget{
    * Спрятать индикацию переноса
    * Вызывается, когда аватар уходит с текущего this._targetElem
    */
-  protected _hideHoverIndication(avatar) {
+  protected _hideHoverIndication(avatar: DragAvatar) {
     /* override */
+    throw new TypeError('Unimplemented method');
   }
 
   /**
    * Показать индикацию переноса
    * Вызывается, когда аватар пришел на новый this._targetElem
    */
-  protected _showHoverIndication(avatar) {
+  protected _showHoverIndication(avatar: DragAvatar) {
     /* override */
+    throw new TypeError('Unimplemented method');
   }
 
   /**
    * Метод вызывается при каждом движении аватара
    */
-  protected onDragMove(avatar, event) {
-    var newTargetElem = this._getTargetElem(avatar, event);
+  public onDragMove(avatar: DragAvatar, event: MouseEvent) : void {
+    var newTargetElem: HTMLElementWithDropTarget = this._getTargetElem(avatar, event);
 
     if (this._targetElem != newTargetElem) {
 
@@ -73,7 +80,7 @@ class DropTarget{
    *  снять текущую индикацию переноса
    *  обнулить this._targetElem
    */
-  protected onDragEnd (avatar, event) {
+  public onDragEnd (avatar: DragAvatar, event: MouseEvent) : void{
     this._hideHoverIndication(avatar);
     this._targetElem = null;
   }
@@ -81,12 +88,14 @@ class DropTarget{
   /**
    * Вход аватара в DropTarget
    */
-  protected onDragEnter(fromDropTarget, avatar, event) {}
+  public onDragEnter(fromDropTarget: DropTarget, avatar: DragAvatar, event: MouseEvent) : void {
+
+  }
 
   /**
    * Выход аватара из DropTarget
    */
-  protected onDragLeave(toDropTarget, avatar, event) {
+  public onDragLeave(toDropTarget: DropTarget, avatar: DragAvatar, event: MouseEvent) : void {
     this._hideHoverIndication(null);
     this._targetElem = null;
   }

@@ -6,7 +6,7 @@
 declare function getCoords(elem) : any
 
 class TreeDragAvatar extends DragAvatar{
-  protected initFromEvent(downX: number, downY: number, event: MouseEvent) : boolean{
+  public initFromEvent(downX: number, downY: number, event: MouseEvent) : boolean{
     if (( <HTMLElement> event.target).tagName != 'SPAN') return false;
 
     this._dragZoneElem =  <HTMLElement> event.target;
@@ -36,11 +36,11 @@ class TreeDragAvatar extends DragAvatar{
   /**
    * При любом исходе переноса элемент-клон больше не нужен
    */
-  protected onDragCancel() : void {
+  public onDragCancel() : void {
     this._destroy();
   }
 
-  protected onDragEnd() : void {
+  public onDragEnd() : void {
     this._destroy();
   }
 

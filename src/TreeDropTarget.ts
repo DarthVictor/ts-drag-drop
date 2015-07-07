@@ -11,7 +11,7 @@ class TreeDropTarget extends  DropTarget{
     this._targetElem && this._targetElem.classList.remove('hover');
   }
 
-  protected _getTargetElem(avatar, event) {
+  protected _getTargetElem(avatar: DragAvatar, event: MouseEvent) : HTMLElementWithDropTarget {
     var target = avatar.getTargetElem();
     if (target.tagName != 'SPAN') {
       return;
@@ -23,13 +23,13 @@ class TreeDropTarget extends  DropTarget{
     var elem = target;
     while (elem) {
       if (elem == elemToMove) return; // попытка перенести родителя в потомка
-      elem = elem.parentNode;
+      elem = elem.parentElement;
     }
 
-    return target;
+    return <HTMLElementWithDropTarget>target;
   }
 
-  protected onDragEnd(avatar, event) {
+  public onDragEnd(avatar: DragAvatar, event: MouseEvent) : void {
 
     if (!this._targetElem) {
       // перенос закончился вне подходящей точки приземления
@@ -49,7 +49,8 @@ class TreeDropTarget extends  DropTarget{
     var title = avatarInfo.dragZoneElem.innerHTML; // переносимый заголовок
 
     // получить контейнер для узлов дерева, соответствующий точке преземления
-    var ul = this._targetElem.parentNode.getElementsByTagName('UL')[0];
+    var ul : HTMLElement = <HTMLElement> this._targetElem.parentElement.getElementsByTagName('UL')[0];
+
     if (!ul) { // нет детей, создадим контейнер
       ul = document.createElement('UL');
       this._targetElem.parentNode.appendChild(ul);

@@ -63,11 +63,7 @@ var DragAvatar = (function () {
      */
     DragAvatar.prototype.getDragInfo = function (event) {
         // тут может быть еще какая-то информация, необходимая для обработки конца или процесса переноса
-        return {
-            elem: this._elem,
-            dragZoneElem: this._dragZoneElem,
-            dragZone: this._dragZone
-        };
+        return new DragInfo(this._elem, this._dragZoneElem, this._dragZone);
     };
     /**
      * Возвращает текущий самый глубокий DOM-элемент под this._elem
@@ -91,15 +87,26 @@ var DragAvatar = (function () {
      * Например, можно вернуть элемент обратно или уничтожить
      */
     DragAvatar.prototype.onDragCancel = function () {
-        /* override */
+        throw new TypeError('Unimplemented method');
     };
     /**
      * Действия с аватаром после успешного переноса
      */
     DragAvatar.prototype.onDragEnd = function () {
-        /* override */
+        throw new TypeError('Unimplemented method');
     };
     return DragAvatar;
+})();
+/**
+ * Класс для хранения информации, необходимой для обработки конца или процесса переноса
+ */
+var DragInfo = (function () {
+    function DragInfo(elem, dragZoneElem, dragZone) {
+        this.elem = elem;
+        this.dragZoneElem = dragZoneElem;
+        this.dragZone = dragZone;
+    }
+    return DragInfo;
 })();
 
 /**
@@ -231,7 +238,7 @@ var DragZone = (function () {
      * У разных зон могут быть разные типы аватаров
      */
     DragZone.prototype._makeAvatar = function () {
-        /* override */
+        throw new TypeError('Unimplemented method');
     };
     /**
      * Обработать начало переноса.
@@ -247,7 +254,7 @@ var DragZone = (function () {
     DragZone.prototype.onDragStart = function (downX, downY, event) {
         var avatar = this._makeAvatar();
         if (!avatar.initFromEvent(downX, downY, event)) {
-            return false;
+            return null;
         }
         return avatar;
     };
@@ -281,14 +288,14 @@ var DropTarget = (function () {
      * Вызывается, когда аватар уходит с текущего this._targetElem
      */
     DropTarget.prototype._hideHoverIndication = function (avatar) {
-        /* override */
+        throw new TypeError('Unimplemented method');
     };
     /**
      * Показать индикацию переноса
      * Вызывается, когда аватар пришел на новый this._targetElem
      */
     DropTarget.prototype._showHoverIndication = function (avatar) {
-        /* override */
+        throw new TypeError('Unimplemented method');
     };
     /**
      * Метод вызывается при каждом движении аватара
@@ -451,7 +458,7 @@ var TreeDropTarget = (function (_super) {
         while (elem) {
             if (elem == elemToMove)
                 return; // попытка перенести родителя в потомка
-            elem = elem.parentNode;
+            elem = elem.parentElement;
         }
         return target;
     };
@@ -469,7 +476,7 @@ var TreeDropTarget = (function (_super) {
         var elemToMove = avatarInfo.dragZoneElem.parentNode; // <LI>
         var title = avatarInfo.dragZoneElem.innerHTML; // переносимый заголовок
         // получить контейнер для узлов дерева, соответствующий точке преземления
-        var ul = this._targetElem.parentNode.getElementsByTagName('UL')[0];
+        var ul = this._targetElem.parentElement.getElementsByTagName('UL')[0];
         if (!ul) {
             ul = document.createElement('UL');
             this._targetElem.parentNode.appendChild(ul);
