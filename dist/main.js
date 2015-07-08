@@ -1,39 +1,7 @@
-function getCoords(elem) {
-    var box = elem.getBoundingClientRect();
-
-    var body = document.body;
-    var docElem = document.documentElement;
-
-    var scrollTop = window.pageYOffset || docElem.scrollTop || body.scrollTop;
-    var scrollLeft = window.pageXOffset || docElem.scrollLeft || body.scrollLeft;
-
-    var clientTop = docElem.clientTop || body.clientTop || 0;
-    var clientLeft = docElem.clientLeft || body.clientLeft || 0;
-
-    var top = box.top + scrollTop - clientTop;
-    var left = box.left + scrollLeft - clientLeft;
-
-    return {
-        top: Math.round(top),
-        left: Math.round(left)
-    };
-}
-
-function getElementUnderClientXY(elem, clientX, clientY) {
-    var display = elem.style.display || '';
-    elem.style.display = 'none';
-
-    var target = document.elementFromPoint(clientX, clientY);
-
-    elem.style.display = display;
-
-    if (!target || target == document) { // это бывает при выносе за границы окна
-        target = document.body; // поправить значение, чтобы был именно элемент
-    }
-
-    return target;
-}
-
+/**
+ * Created by DarthVictor on 27.06.2015.
+ * https://learn.javascript.ru/drag-and-drop-plus
+ */
 /**
  * "Аватар" - элемент, который перетаскивается.
  *
@@ -205,10 +173,10 @@ var DragManager = (function () {
     DragManager.prototype.findDropTarget = function (event) {
         // получить элемент под аватаром
         var elem = this.avatar.getTargetElem();
-        while (elem !== document && !elem.dropTarget) {
+        while (elem !== document && elem !== null && !elem.dropTarget) {
             elem = elem.parentElement;
         }
-        if (!elem.dropTarget) {
+        if (elem === null || !elem.dropTarget) {
             return null;
         }
         return elem.dropTarget;
@@ -341,6 +309,36 @@ var DropTarget = (function () {
     };
     return DropTarget;
 })();
+
+/**
+ * Created by DarthVictor on 27.06.2015.
+ * https://learn.javascript.ru/drag-and-drop-plus
+ */
+function getElementUnderClientXY(elem, clientX, clientY) {
+    var display = elem.style.display || '';
+    elem.style.display = 'none';
+    var target = document.elementFromPoint(clientX, clientY);
+    elem.style.display = display;
+    if (!target || target == document) {
+        target = document.body; // поправить значение, чтобы был именно элемент
+    }
+    return target;
+}
+function getCoords(elem) {
+    var box = elem.getBoundingClientRect();
+    var body = document.body;
+    var docElem = document.documentElement;
+    var scrollTop = window.pageYOffset || docElem.scrollTop || body.scrollTop;
+    var scrollLeft = window.pageXOffset || docElem.scrollLeft || body.scrollLeft;
+    var clientTop = docElem.clientTop || body.clientTop || 0;
+    var clientLeft = docElem.clientLeft || body.clientLeft || 0;
+    var top = box.top + scrollTop - clientTop;
+    var left = box.left + scrollLeft - clientLeft;
+    return {
+        top: Math.round(top),
+        left: Math.round(left)
+    };
+}
 
 /**
  * Created by DarthVictor on 27.06.2015.

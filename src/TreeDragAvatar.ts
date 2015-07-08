@@ -3,8 +3,6 @@
  * https://learn.javascript.ru/drag-and-drop-plus
  */
 
-declare function getCoords(elem) : any
-
 class TreeDragAvatar extends DragAvatar{
   public initFromEvent(downX: number, downY: number, event: MouseEvent) : boolean{
     if (( <HTMLElement> event.target).tagName != 'SPAN') return false;

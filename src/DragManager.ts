@@ -17,7 +17,7 @@ class DragManager {
   constructor(){
     document.ondragstart = function() {
       return false;
-    }
+    };
     var self =  this;
     document.onmousemove = function(e){ return self.onMouseMove(e);};
     document.onmouseup =  function(e){ return self.onMouseUp(e);};
@@ -118,11 +118,11 @@ class DragManager {
     // получить элемент под аватаром
     var elem = this.avatar.getTargetElem();
 
-    while (elem !== <Node> document && !elem.dropTarget) {
+    while (elem !== <Node> document && elem !== null && !elem.dropTarget) {
       elem = <HTMLElementWithDropTarget>elem.parentElement;
     }
 
-    if (!elem.dropTarget) {
+    if (elem === null || !elem.dropTarget) {
       return null;
     }
 
