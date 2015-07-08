@@ -2,6 +2,21 @@
  * Created by DarthVictor on 27.06.2015.
  * https://learn.javascript.ru/drag-and-drop-plus
  */
+var TypescriptDragDrop;
+(function (TypescriptDragDrop) {
+    var HelloWorld = (function () {
+        function HelloWorld() {
+            alert('Hello World');
+        }
+        return HelloWorld;
+    })();
+    TypescriptDragDrop.HelloWorld = HelloWorld;
+})(TypescriptDragDrop || (TypescriptDragDrop = {}));
+
+/**
+ * Created by DarthVictor on 27.06.2015.
+ * https://learn.javascript.ru/drag-and-drop-plus
+ */
 /**
  * "Аватар" - элемент, который перетаскивается.
  *
@@ -339,21 +354,6 @@ function getCoords(elem) {
         left: Math.round(left)
     };
 }
-
-/**
- * Created by DarthVictor on 27.06.2015.
- * https://learn.javascript.ru/drag-and-drop-plus
- */
-var TypescriptDragDrop;
-(function (TypescriptDragDrop) {
-    var HelloWorld = (function () {
-        function HelloWorld() {
-            alert('Hello World');
-        }
-        return HelloWorld;
-    })();
-    TypescriptDragDrop.HelloWorld = HelloWorld;
-})(TypescriptDragDrop || (TypescriptDragDrop = {}));
 
 /**
  * Created by DarthVictor on 27.06.2015.
