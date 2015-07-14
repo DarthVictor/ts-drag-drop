@@ -326,19 +326,9 @@ var DropTarget = (function () {
 })();
 
 /**
- * Created by DarthVictor on 27.06.2015.
+ * Created by DarthVictor on 14.07.2015.
  * https://learn.javascript.ru/drag-and-drop-plus
  */
-function getElementUnderClientXY(elem, clientX, clientY) {
-    var display = elem.style.display || '';
-    elem.style.display = 'none';
-    var target = document.elementFromPoint(clientX, clientY);
-    elem.style.display = display;
-    if (!target || target == document) {
-        target = document.body; // поправить значение, чтобы был именно элемент
-    }
-    return target;
-}
 function getCoords(elem) {
     var box = elem.getBoundingClientRect();
     var body = document.body;
@@ -353,6 +343,21 @@ function getCoords(elem) {
         top: Math.round(top),
         left: Math.round(left)
     };
+}
+
+/**
+ * Created by DarthVictor on 14.07.2015.
+ * https://learn.javascript.ru/drag-and-drop-plus
+ */
+function getElementUnderClientXY(elem, clientX, clientY) {
+    var display = elem.style.display || '';
+    elem.style.display = 'none';
+    var target = document.elementFromPoint(clientX, clientY);
+    elem.style.display = display;
+    if (!target || target == document) {
+        target = document.body; // поправить значение, чтобы был именно элемент
+    }
+    return target;
 }
 
 /**
