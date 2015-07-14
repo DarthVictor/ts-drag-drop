@@ -28,7 +28,8 @@ gulp.task('js:app', function() {
   var tsStream = gulp.src(sources.app.ts)
     .pipe(ts({
       declarationFiles: false,
-      noExternalResolve: true
+      noExternalResolve: true,
+      module: 'commonjs'
     }));
   var jsStream = gulp.src(sources.app.js);
   es.merge(

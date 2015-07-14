@@ -3,133 +3,142 @@
  * https://learn.javascript.ru/drag-and-drop-plus
  */
 
-class DragManager {
-  private static _instance: DragManager = new DragManager();
-  public static getInstance(){
-    return this._instance;
-  }
-  protected dragZone: DragZone;
-  protected avatar: DragAvatar;
-  protected dropTarget: DropTarget;
-  protected downX: number;
-  protected downY: number;
+/// <reference path="DragAndDrop.ts" />
+module DragAndDrop {
+  class DragManager {
+    private static _instance: DragManager = new DragManager();
 
-  constructor(){
-    document.ondragstart = function() {
-      return false;
-    };
-    var self =  this;
-    document.onmousemove = function(e){ return self.onMouseMove(e);};
-    document.onmouseup =  function(e){ return self.onMouseUp(e);};
-    document.onmousedown =  function(e){ return self.onMouseDown(e)};
-  }
-
-  protected onMouseDown(e) {
-
-    if (e.which != 1) { // не левой кнопкой
-      return false;
+    public static getInstance() {
+      return this._instance;
     }
 
-    this.dragZone = this.findDragZone(e);
+    protected dragZone:DragZone;
+    protected avatar:DragAvatar;
+    protected dropTarget:DropTarget;
+    protected downX:number;
+    protected downY:number;
 
-    if (!this.dragZone) {
-      return;
+    constructor() {
+      document.ondragstart = function () {
+        return false;
+      };
+      var self = this;
+      document.onmousemove = function (e) {
+        return self.onMouseMove(e);
+      };
+      document.onmouseup = function (e) {
+        return self.onMouseUp(e);
+      };
+      document.onmousedown = function (e) {
+        return self.onMouseDown(e)
+      };
     }
 
-    // запомним, что элемент нажат на текущих координатах pageX/pageY
-    this.downX = e.pageX;
-    this.downY = e.pageY;
+    protected onMouseDown(e) {
+      if (e.which != 1) { // не левой кнопкой
+        return false;
+      }
 
-    return false;
-  }
+      this.dragZone = this.findDragZone(e);
 
-  protected onMouseMove(e) {
-    if (!this.dragZone) return; // элемент не зажат
-
-    if (!this.avatar) { // элемент нажат, но пока не начали его двигать
-      if (Math.abs(e.pageX - this.downX) < 3 && Math.abs(e.pageY - this.downY) < 3) {
+      if (!this.dragZone) {
         return;
       }
-      // попробовать захватить элемент
-      this.avatar = this.dragZone.onDragStart(this.downX, this.downY, e);
 
-      if (!this.avatar) { // не получилось, значит перенос продолжать нельзя
-        this.cleanUp(); // очистить приватные переменные, связанные с переносом
-        return;
-      }
-    }
+      // запомним, что элемент нажат на текущих координатах pageX/pageY
+      this.downX = e.pageX;
+      this.downY = e.pageY;
 
-    // отобразить перенос объекта, перевычислить текущий элемент под курсором
-    this.avatar.onDragMove(e);
-
-    // найти новый dropTarget под курсором: newDropTarget
-    // текущий dropTarget остался от прошлого mousemove
-    // *оба значения: и newDropTarget и dropTarget могут быть null
-    var newDropTarget = this.findDropTarget(e);
-
-    if (newDropTarget != this.dropTarget) {
-      // уведомить старую и новую зоны-цели о том, что с них ушли/на них зашли
-      this.dropTarget && this.dropTarget.onDragLeave(newDropTarget, this.avatar, e);
-      newDropTarget && newDropTarget.onDragEnter(this.dropTarget, this.avatar, e);
-    }
-
-    this.dropTarget = newDropTarget;
-
-    this.dropTarget && this.dropTarget.onDragMove(this.avatar, e);
-
-    return false;
-  }
-
-  protected onMouseUp(e) {
-
-    if (e.which != 1) { // не левой кнопкой
       return false;
     }
 
-    if (this.avatar) { // если уже начали передвигать
+    protected onMouseMove(e) {
+      if (!this.dragZone) return; // элемент не зажат
 
-      if (this.dropTarget) {
-        // завершить перенос и избавиться от аватара, если это нужно
-        // эта функция обязана вызвать avatar.onDragEnd/onDragCancel
-        this.dropTarget.onDragEnd(this.avatar, e);
-      } else {
-        this.avatar.onDragCancel();
+      if (!this.avatar) { // элемент нажат, но пока не начали его двигать
+        if (Math.abs(e.pageX - this.downX) < 3 && Math.abs(e.pageY - this.downY) < 3) {
+          return;
+        }
+        // попробовать захватить элемент
+        this.avatar = this.dragZone.onDragStart(this.downX, this.downY, e);
+
+        if (!this.avatar) { // не получилось, значит перенос продолжать нельзя
+          this.cleanUp(); // очистить приватные переменные, связанные с переносом
+          return;
+        }
       }
 
+      // отобразить перенос объекта, перевычислить текущий элемент под курсором
+      this.avatar.onDragMove(e);
+
+      // найти новый dropTarget под курсором: newDropTarget
+      // текущий dropTarget остался от прошлого mousemove
+      // *оба значения: и newDropTarget и dropTarget могут быть null
+      var newDropTarget = this.findDropTarget(e);
+
+      if (newDropTarget != this.dropTarget) {
+        // уведомить старую и новую зоны-цели о том, что с них ушли/на них зашли
+        this.dropTarget && this.dropTarget.onDragLeave(newDropTarget, this.avatar, e);
+        newDropTarget && newDropTarget.onDragEnter(this.dropTarget, this.avatar, e);
+      }
+
+      this.dropTarget = newDropTarget;
+
+      this.dropTarget && this.dropTarget.onDragMove(this.avatar, e);
+
+      return false;
     }
 
-    this.cleanUp();
-  }
+    protected onMouseUp(e) {
 
-  protected cleanUp() {
-    // очистить все промежуточные объекты
-    this.dragZone = this.avatar = this.dropTarget = null;
-  }
+      if (e.which != 1) { // не левой кнопкой
+        return false;
+      }
 
-  protected findDragZone(event) {
-    var elem = event.target;
-    while (elem != <Node> document && !elem.dragZone) {
-      elem = elem.parentNode;
-    }
-    return elem.dragZone;
-  }
+      if (this.avatar) { // если уже начали передвигать
 
-  protected findDropTarget(event) {
-    // получить элемент под аватаром
-    var elem = this.avatar.getTargetElem();
+        if (this.dropTarget) {
+          // завершить перенос и избавиться от аватара, если это нужно
+          // эта функция обязана вызвать avatar.onDragEnd/onDragCancel
+          this.dropTarget.onDragEnd(this.avatar, e);
+        } else {
+          this.avatar.onDragCancel();
+        }
 
-    while (elem !== <Node> document && elem !== null && !elem.dropTarget) {
-      elem = <HTMLElementWithDropTarget>elem.parentElement;
+      }
+
+      this.cleanUp();
     }
 
-    if (elem === null || !elem.dropTarget) {
-      return null;
+    protected cleanUp() {
+      // очистить все промежуточные объекты
+      this.dragZone = this.avatar = this.dropTarget = null;
     }
 
-    return elem.dropTarget;
+    protected findDragZone(event) {
+      var elem = event.target;
+      while (elem != <Node> document && !elem.dragZone) {
+        elem = elem.parentNode;
+      }
+      return elem.dragZone;
+    }
+
+    protected findDropTarget(event){
+      // получить элемент под аватаром
+      var elem = this.avatar.getTargetElem();
+
+      while (elem != <Node> document && !elem.dropTarget) {
+        elem = <HTMLElementWithDropTarget>elem.parentNode;
+      }
+
+      if (!elem.dropTarget) {
+        return null;
+      }
+
+      return elem.dropTarget;
+    }
+
   }
 
+  export var dragManager = DragManager.getInstance();
 }
-var dragManager = DragManager.getInstance();
-
-
