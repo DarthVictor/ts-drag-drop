@@ -1,18 +1,3 @@
-/**
- * Created by DarthVictor on 27.06.2015.
- * https://learn.javascript.ru/drag-and-drop-plus
- */
-var TypescriptDragDrop;
-(function (TypescriptDragDrop) {
-    var HelloWorld = (function () {
-        function HelloWorld() {
-            alert('Hello World');
-        }
-        return HelloWorld;
-    })();
-    TypescriptDragDrop.HelloWorld = HelloWorld;
-})(TypescriptDragDrop || (TypescriptDragDrop = {}));
-
 
 
 
@@ -396,6 +381,21 @@ var Lib;
 })(Lib || (Lib = {}));
 
 
+
+/**
+ * Created by DarthVictor on 27.06.2015.
+ * https://learn.javascript.ru/drag-and-drop-plus
+ */
+/// <reference path="../DragAndDrop/DragAndDrop.ts" />
+/// <reference path="TreeDragAndDrop.ts" />
+var TreeDragAndDrop;
+(function (TreeDragAndDrop) {
+    function Main(tree) {
+        new TreeDragAndDrop.TreeDragZone(tree);
+        new TreeDragAndDrop.TreeDropTarget(tree);
+    }
+    TreeDragAndDrop.Main = Main;
+})(TreeDragAndDrop || (TreeDragAndDrop = {}));
 
 /**
  * Created by DarthVictor on 27.06.2015.

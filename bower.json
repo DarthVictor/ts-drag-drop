@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "description": "Simple drag and drop framework for TypeScript",
   "main": "dist/main.js",
-  "dependencies": {},
+  "dependencies": {
+    "bootstrap.native": "~0.9.7"
+  },
   "devDependencies": {}
 }
-
