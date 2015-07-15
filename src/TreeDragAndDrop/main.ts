@@ -4,6 +4,8 @@
  */
 /// <reference path="../DragAndDrop/DragAndDrop.ts" />
 /// <reference path="TreeDragAndDrop.ts" />
+/// <reference path="TreeDragZone.ts" />
+/// <reference path="TreeDropTarget.ts" />
 module TreeDragAndDrop {
   export function Main(tree: HTMLElement) {
       new TreeDragZone(<DragAndDrop.HTMLElementWithDragZone> tree);

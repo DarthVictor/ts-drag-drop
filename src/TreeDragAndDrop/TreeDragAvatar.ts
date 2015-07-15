@@ -3,7 +3,7 @@
  * https://learn.javascript.ru/drag-and-drop-plus
  */
 /// <reference path="../Lib/Lib.ts" />
-/// <reference path="../DragAndDrop/DragAndDrop.ts" />
+/// <reference path="../DragAndDrop/DragAvatar.ts" />
 
 /// <reference path="TreeDragAndDrop.ts" />
 module TreeDragAndDrop {

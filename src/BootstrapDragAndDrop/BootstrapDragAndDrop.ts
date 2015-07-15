@@ -3,7 +3,7 @@
  * https://learn.javascript.ru/drag-and-drop-plus
  */
 
-module FormDragAndDrop {
+module BootstrapDragAndDrop {
 
 }
 

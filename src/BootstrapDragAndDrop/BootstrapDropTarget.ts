@@ -5,9 +5,9 @@
 
 /// <reference path="../DragAndDrop/DropTarget.ts" />
 /// <reference path="../DragAndDrop/DragAvatar.ts" />
-/// <reference path="TreeDragAndDrop.ts" />
-module TreeDragAndDrop {
-  export class TreeDropTarget extends DragAndDrop.DropTarget {
+/// <reference path="BootstrapDragAndDrop.ts" />
+module BootstrapDragAndDrop {
+  export class BootstrapDropTarget extends DragAndDrop.DropTarget {
     protected _showHoverIndication() {
       this._targetElem && this._targetElem.classList.add('hover');
     }

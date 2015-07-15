@@ -2,12 +2,13 @@
  * Created by DarthVictor on 27.06.2015.
  * https://learn.javascript.ru/drag-and-drop-plus
  */
-
 /// <reference path="../DragAndDrop/DragAndDrop.ts" />
-/// <reference path="FormDragAndDrop.ts" />
+/// <reference path="../DragAndDrop/DragAvatar.ts" />
+/// <reference path="BootstrapDragAndDrop.ts" />
 module BootstrapDragAndDrop {
   export class BootstrapDragAvatar extends DragAndDrop.DragAvatar {
     public initFromEvent(downX:number, downY:number, event:MouseEvent):boolean {
+      console.log(event)
       if (( <HTMLElement> event.target).tagName != 'LABEL') return false;
 
       this._dragZoneElem = (<HTMLElement> event.target).parentElement;

@@ -29,8 +29,7 @@ gulp.task('js:app', function() {
     .pipe(ts({
       sortOutput: true,
       declarationFiles: false,
-      noExternalResolve: true,
-      module: 'commonjs'
+      target: 'ES5'
     }));
   var jsStream = gulp.src(sources.app.js);
   es.merge(
