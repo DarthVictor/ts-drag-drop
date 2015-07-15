@@ -27,6 +27,7 @@ var destinations = {
 gulp.task('js:app', function() {
   var tsStream = gulp.src(sources.app.ts)
     .pipe(ts({
+      sortOutput: true,
       declarationFiles: false,
       noExternalResolve: true,
       module: 'commonjs'

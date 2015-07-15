@@ -1,52 +1,3 @@
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var BootstrapDragAndDrop;
-(function (BootstrapDragAndDrop) {
-    var TreeDragAvatar = (function (_super) {
-        __extends(TreeDragAvatar, _super);
-        function TreeDragAvatar() {
-            _super.apply(this, arguments);
-        }
-        TreeDragAvatar.prototype.initFromEvent = function (downX, downY, event) {
-            if (event.target.tagName != 'SPAN')
-                return false;
-            this._dragZoneElem = event.target;
-            var elem = this._elem = this._dragZoneElem.cloneNode(true);
-            elem.className = 'avatar';
-            // создать вспомогательные свойства shiftX/shiftY
-            var coords = Lib.getCoords(this._dragZoneElem);
-            this._shiftX = downX - coords.left;
-            this._shiftY = downY - coords.top;
-            // инициировать начало переноса
-            document.body.appendChild(elem);
-            elem.style.zIndex = '9999';
-            elem.style.position = 'absolute';
-            return true;
-        };
-        /**
-         * Вспомогательный метод
-         */
-        TreeDragAvatar.prototype._destroy = function () {
-            this._elem.parentNode.removeChild(this._elem);
-        };
-        /**
-         * При любом исходе переноса элемент-клон больше не нужен
-         */
-        TreeDragAvatar.prototype.onDragCancel = function () {
-            this._destroy();
-        };
-        TreeDragAvatar.prototype.onDragEnd = function () {
-            this._destroy();
-        };
-        return TreeDragAvatar;
-    })(DragAndDrop.DragAvatar);
-    BootstrapDragAndDrop.TreeDragAvatar = TreeDragAvatar;
-})(BootstrapDragAndDrop || (BootstrapDragAndDrop = {}));
-
 
 
 
@@ -383,6 +334,66 @@ var DragAndDrop;
     })();
     DragAndDrop.DropTarget = DropTarget;
 })(DragAndDrop || (DragAndDrop = {}));
+
+/**
+ * Created by DarthVictor on 27.06.2015.
+ * https://learn.javascript.ru/drag-and-drop-plus
+ */
+
+/**
+ * Created by DarthVictor on 27.06.2015.
+ * https://learn.javascript.ru/drag-and-drop-plus
+ */
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="../DragAndDrop/DragAndDrop.ts" />
+/// <reference path="FormDragAndDrop.ts" />
+var BootstrapDragAndDrop;
+(function (BootstrapDragAndDrop) {
+    var BootstrapDragAvatar = (function (_super) {
+        __extends(BootstrapDragAvatar, _super);
+        function BootstrapDragAvatar() {
+            _super.apply(this, arguments);
+        }
+        BootstrapDragAvatar.prototype.initFromEvent = function (downX, downY, event) {
+            if (event.target.tagName != 'LABEL')
+                return false;
+            this._dragZoneElem = event.target.parentElement;
+            var elem = this._elem = this._dragZoneElem.cloneNode(true);
+            elem.className = 'avatar';
+            // создать вспомогательные свойства shiftX/shiftY
+            var coords = Lib.getCoords(this._dragZoneElem);
+            this._shiftX = downX - coords.left;
+            this._shiftY = downY - coords.top;
+            // инициировать начало переноса
+            document.body.appendChild(elem);
+            elem.style.zIndex = '9999';
+            elem.style.position = 'absolute';
+            return true;
+        };
+        /**
+         * Вспомогательный метод
+         */
+        BootstrapDragAvatar.prototype._destroy = function () {
+            this._elem.parentNode.removeChild(this._elem);
+        };
+        /**
+         * При любом исходе переноса элемент-клон больше не нужен
+         */
+        BootstrapDragAvatar.prototype.onDragCancel = function () {
+            this._destroy();
+        };
+        BootstrapDragAvatar.prototype.onDragEnd = function () {
+            this._destroy();
+        };
+        return BootstrapDragAvatar;
+    })(DragAndDrop.DragAvatar);
+    BootstrapDragAndDrop.BootstrapDragAvatar = BootstrapDragAvatar;
+})(BootstrapDragAndDrop || (BootstrapDragAndDrop = {}));
 
 /**
  * Created by DarthVictor on 14.07.2015.

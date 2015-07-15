@@ -2,6 +2,9 @@
  * Created by DarthVictor on 27.06.2015.
  * https://learn.javascript.ru/drag-and-drop-plus
  */
+
+/// <reference path="../DragAndDrop/DragAndDrop.ts" />
+/// <reference path="FormDragAndDrop.ts" />
 module BootstrapDragAndDrop {
   export class BootstrapDragAvatar extends DragAndDrop.DragAvatar {
     public initFromEvent(downX:number, downY:number, event:MouseEvent):boolean {
@@ -44,3 +47,4 @@ module BootstrapDragAndDrop {
 
   }
 }
+
