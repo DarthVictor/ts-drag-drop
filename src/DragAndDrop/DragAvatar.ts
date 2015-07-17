@@ -25,18 +25,18 @@ module DragAndDrop {
      * по умолчанию - элемент, соответствующий всей зоне
      * может быть уточнен в initFromEvent
      */
-    protected _dragZoneElem:HTMLElement;
+    protected _dragZoneElem: HTMLElement;
 
     /**
      * Сам элемент аватара, который будет носиться по экрану.
      * Инициализуется в initFromEvent
      */
-    protected _elem:HTMLElement;
+    protected _elem: HTMLElement;
 
     /**
      * Текущий элемент под this._elem, обновление проиходит в методе onDragMove
      */
-    protected _currentTargetElem:HTMLElementWithDropTarget;
+    protected _currentTargetElem: HTMLElementWithDropTarget;
 
     /**
      * вспомогательные свойства, которые хранят координаты точки первого нажатия при начали переноса,
@@ -45,7 +45,7 @@ module DragAndDrop {
     protected _shiftX:number;
     protected _shiftY:number;
 
-    constructor(dragZone:DragZone, dragElem:HTMLElement) {
+    constructor(dragZone:DragZone, dragElem: HTMLElement) {
       this._dragZone = dragZone;
       this._dragZoneElem = dragElem;
       this._elem = dragElem;
@@ -118,11 +118,11 @@ module DragAndDrop {
    * Класс для хранения информации, необходимой для обработки конца или процесса переноса
    */
   export class DragInfo {
-    elem:HTMLElement;
-    dragZoneElem:HTMLElement;
-    dragZone:DragZone;
+    elem: HTMLElement;
+    dragZoneElem: HTMLElement;
+    dragZone: DragZone;
 
-    constructor(elem:HTMLElement, dragZoneElem:HTMLElement, dragZone:DragZone) {
+    constructor(elem:HTMLElement, dragZoneElem: HTMLElement, dragZone: DragZone) {
       this.elem = elem;
       this.dragZoneElem = dragZoneElem;
       this.dragZone = dragZone;

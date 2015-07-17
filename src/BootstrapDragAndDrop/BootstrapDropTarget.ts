@@ -16,21 +16,13 @@ module BootstrapDragAndDrop {
       this._targetElem && this._targetElem.classList.remove('hover');
     }
 
-    protected _getTargetElem(avatar:DragAndDrop.DragAvatar, event:MouseEvent):DragAndDrop.HTMLElementWithDropTarget {
+    protected _getTargetElem(avatar:DragAndDrop.DragAvatar, event:MouseEvent): DragAndDrop.HTMLElementWithDropTarget {
       var target = avatar.getTargetElem();
-      if (target.tagName != 'SPAN') {
+      if (!target.classList.contains('drop-target')) {
         return;
       }
-
-      // проверить, может быть перенос узла внутрь самого себя или в себя?
-      var elemToMove = avatar.getDragInfo(event).dragZoneElem.parentNode;
-
-      var elem = target;
-      while (elem) {
-        if (elem == elemToMove) return; // попытка перенести родителя в потомка
-        elem = <DragAndDrop.HTMLElementWithDropTarget> elem.parentElement;
-      }
-
+      //var dragInfo = avatar.getDragInfo(event);
+      //console.log(target)
       return target;
     }
 
@@ -50,8 +42,10 @@ module BootstrapDragAndDrop {
       avatar.onDragEnd(); // аватар больше не нужен, перенос успешен
 
       // вставить элемент в детей в отсортированном порядке
-      var elemToMove = avatarInfo.dragZoneElem.parentNode; // <LI>
-      var title = avatarInfo.dragZoneElem.innerHTML; // переносимый заголовок
+      var elemToMove = avatarInfo.dragZoneElem;
+      console.log(elemToMove, this._targetElem)
+
+      /*var title = avatarInfo.dragZoneElem.innerHTML; // переносимый заголовок
 
       // получить контейнер для узлов дерева, соответствующий точке преземления
       var ul:HTMLElement = <HTMLElement> this._targetElem.parentElement.getElementsByTagName('UL')[0];
@@ -70,8 +64,8 @@ module BootstrapDragAndDrop {
           break;
         }
       }
-
-      ul.insertBefore(elemToMove, li);
+*/
+      /* ul.insertBefore(elemToMove, li);*/
 
       this._targetElem = null;
     }

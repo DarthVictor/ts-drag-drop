@@ -3,12 +3,17 @@
     font-weight: bold;
 }
 /* #tree span.hover, для приоритета перед :hover также добавлен подселектор */
-
-#accordion label.hover,
-#accordion label.hover:hover {
+#accordion .drop-target.hover,
+#accordion .drop-target.hover:hover {
+  cursor: pointer;
+  border: dotted 1px red;
+}
+#accordion .drag-elem.drop-target.hover,
+#accordion .drag-elem.drop-target.hover:hover {
     color: red;
     font-weight: bold;
     cursor: pointer;
+    border: dotted 1px red;
 }
 
 label.avatar {
@@ -20,3 +25,20 @@ label.avatar {
     filter: progid: DXImageTransform.Microsoft.Alpha(opacity=60);
     /* IE opacity */
 }
+/*
+
+.form-drop-space{
+  padding: 5px;
+  border: solid 1px black;
+}
+
+.row.form-row {
+  display: table;
+}
+
+.form-group.form-column, .form-drop-space.form-column {
+  float: none;
+  display: table-cell;
+  border: 1px solid;
+}
+*/

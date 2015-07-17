@@ -31,18 +31,18 @@ module BootstrapDragAndDrop {
     /**
      * Вспомогательный метод
      */
-    private _destroy():void {
+    private _destroy(): void {
       this._elem.parentNode.removeChild(this._elem);
     }
 
     /**
      * При любом исходе переноса элемент-клон больше не нужен
      */
-    public onDragCancel():void {
+    public onDragCancel(): void {
       this._destroy();
     }
 
-    public onDragEnd():void {
+    public onDragEnd(): void {
       this._destroy();
     }
 
