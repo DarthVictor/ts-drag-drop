@@ -16,7 +16,7 @@
     border: dotted 1px red;
 }
 
-label.avatar {
+.avatar {
     padding: 1px;
     border: 1px dotted black;
     background: white;

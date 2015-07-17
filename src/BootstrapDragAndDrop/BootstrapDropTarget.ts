@@ -8,11 +8,11 @@
 /// <reference path="BootstrapDragAndDrop.ts" />
 module BootstrapDragAndDrop {
   export class BootstrapDropTarget extends DragAndDrop.DropTarget {
-    protected _showHoverIndication() {
-      this._targetElem && this._targetElem.classList.add('hover');
+    protected _showHoverIndication(avatar: BootstrapDragAvatar) {
+      this._targetElem && this._targetElem == avatar.currentTargetRowColumnElemnt && this._targetElem.classList.add('hover');
     }
 
-    protected _hideHoverIndication() {
+    protected _hideHoverIndication(avatar:DragAndDrop.DragAvatar) {
       this._targetElem && this._targetElem.classList.remove('hover');
     }
 
@@ -26,25 +26,25 @@ module BootstrapDragAndDrop {
       return target;
     }
 
-    public onDragEnd(avatar:DragAndDrop.DragAvatar, event:MouseEvent):void {
+    public onDragEnd(avatar: BootstrapDragAndDrop.BootstrapDragAvatar, event:MouseEvent):void {
 
-      if (!this._targetElem) {
+      if (!this._targetElem || avatar.shadeElement.parentElement !== avatar.currentTargetRow) {
         // перенос закончился вне подходящей точки приземления
         avatar.onDragCancel();
         return;
       }
 
-      this._hideHoverIndication();
+      this._hideHoverIndication(avatar);
 
       // получить информацию об объекте переноса
       var avatarInfo = avatar.getDragInfo(event);
 
-      avatar.onDragEnd(); // аватар больше не нужен, перенос успешен
 
       // вставить элемент в детей в отсортированном порядке
-      var elemToMove = avatarInfo.dragZoneElem;
-      console.log(elemToMove, this._targetElem)
-
+      var elemToMove = avatar.getDragInfo(event).dragZoneElem;
+      avatar.currentTargetRow.insertBefore(elemToMove, avatar.shadeElement)
+      avatar.currentTargetRow.removeChild(avatar.shadeElement)
+      avatar.onDragEnd(); // аватар больше не нужен, перенос успешен
       /*var title = avatarInfo.dragZoneElem.innerHTML; // переносимый заголовок
 
       // получить контейнер для узлов дерева, соответствующий точке преземления
