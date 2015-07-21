@@ -179,94 +179,6 @@ var DragAndDrop;
     DragAndDrop.DropTarget = DropTarget;
 })(DragAndDrop || (DragAndDrop = {}));
 
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-/**
- * Created by DarthVictor on 27.06.2015.
- * https://learn.javascript.ru/drag-and-drop-plus
- */
-/// <reference path="../DragAndDrop/DragAndDrop.ts" />
-/// <reference path="../DragAndDrop/DragAvatar.ts" />
-/// <reference path="../DragAndDrop/DropTarget.ts" />
-/// <reference path="BootstrapDragAndDrop.ts" />
-var BootstrapDragAndDrop;
-(function (BootstrapDragAndDrop) {
-    var BootstrapDragAvatar = (function (_super) {
-        __extends(BootstrapDragAvatar, _super);
-        function BootstrapDragAvatar() {
-            _super.apply(this, arguments);
-        }
-        BootstrapDragAvatar.prototype.initFromEvent = function (downX, downY, event) {
-            if (event.target.tagName != 'LABEL')
-                return false;
-            this._dragZoneElem = event.target.parentElement;
-            var elem = this._elem = this._dragZoneElem.cloneNode(true);
-            elem.className = 'avatar';
-            // создать вспомогательные свойства shiftX/shiftY
-            var coords = Lib.getCoords(this._dragZoneElem);
-            this._shiftX = downX - coords.left;
-            this._shiftY = downY - coords.top;
-            // инициировать начало переноса
-            document.body.appendChild(elem);
-            elem.style.zIndex = '9999';
-            elem.style.position = 'absolute';
-            // создаем объект отображающий отбрасываемую элементом тень
-            this.shadeElement = this._dragZoneElem.cloneNode(true);
-            this.shadeElement.classList.add('shade-element');
-            return true;
-        };
-        /**
-         * При каждом движении мыши перемещает this._elem
-         * и записывает текущий элемент под this._elem в _currentTargetElem
-         * @param event
-         */
-        BootstrapDragAvatar.prototype.onDragMove = function (event) {
-            _super.prototype.onDragMove.call(this, event);
-            var target = this.getTargetElem();
-            if (target.classList.contains('row') && target.tagName === 'DIV' && target.lastElementChild !== this._dragZoneElem) {
-                this.currentTargetRow = target;
-                this.currentTargetRowColumnElemnt = null;
-                this.shadeElement.style.display = 'block';
-                this.currentTargetRow.appendChild(this.shadeElement);
-            }
-            else if (target.classList.contains('form-group') && target.tagName === 'DIV' && target !== this._dragZoneElem && target.previousElementSibling !== this._dragZoneElem) {
-                this.currentTargetRowColumnElemnt = target;
-                this.currentTargetRow = target.parentElement;
-                this.shadeElement.style.display = 'block';
-                this.currentTargetRow.insertBefore(this.shadeElement, this.currentTargetRowColumnElemnt);
-            }
-            else {
-                this.shadeElement.style.display = 'none';
-                document.body.appendChild(this.shadeElement);
-            }
-        };
-        /**
-         * Вспомогательный метод
-         */
-        BootstrapDragAvatar.prototype._destroy = function () {
-            this._elem.parentNode.removeChild(this._elem);
-            if (this.shadeElement.parentElement) {
-                this.shadeElement.parentElement.removeChild(this.shadeElement);
-            }
-        };
-        /**
-         * При любом исходе переноса элемент-клон больше не нужен
-         */
-        BootstrapDragAvatar.prototype.onDragCancel = function () {
-            this._destroy();
-        };
-        BootstrapDragAvatar.prototype.onDragEnd = function () {
-            this._destroy();
-        };
-        return BootstrapDragAvatar;
-    })(DragAndDrop.DragAvatar);
-    BootstrapDragAndDrop.BootstrapDragAvatar = BootstrapDragAvatar;
-})(BootstrapDragAndDrop || (BootstrapDragAndDrop = {}));
-
 /**
  * Created by DarthVictor on 27.06.2015.
  * https://learn.javascript.ru/drag-and-drop-plus
@@ -315,6 +227,113 @@ var DragAndDrop;
     })();
     DragAndDrop.DragZone = DragZone;
 })(DragAndDrop || (DragAndDrop = {}));
+
+/**
+ * Created by DarthVictor on 27.06.2015.
+ * https://learn.javascript.ru/drag-and-drop-plus
+ */
+/// <reference path="../DragAndDrop/DragAndDrop.ts" />
+/// <reference path="../DragAndDrop/DragAvatar.ts" />
+/// <reference path="../DragAndDrop/DropTarget.ts" />
+/// <reference path="../DragAndDrop/DragZone.ts" />
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="BootstrapDragAndDrop.ts" />
+var BootstrapDragAndDrop;
+(function (BootstrapDragAndDrop) {
+    var BootstrapDragAvatar = (function (_super) {
+        __extends(BootstrapDragAvatar, _super);
+        function BootstrapDragAvatar() {
+            _super.apply(this, arguments);
+        }
+        BootstrapDragAvatar.prototype.initFromEvent = function (downX, downY, event) {
+            if (event.target.tagName != 'LABEL')
+                return false;
+            this._dragZoneElem = event.target.parentElement;
+            var elem = this._elem = this._dragZoneElem.cloneNode(true);
+            elem.className = 'avatar';
+            // создать вспомогательные свойства shiftX/shiftY
+            var coords = Lib.getCoords(this._dragZoneElem);
+            this._shiftX = downX - coords.left;
+            this._shiftY = downY - coords.top;
+            // инициировать начало переноса
+            document.body.appendChild(elem);
+            elem.style.zIndex = '9999';
+            elem.style.position = 'absolute';
+            // создаем объект отображающий отбрасываемую элементом тень
+            this.shadeElement = this._dragZoneElem.cloneNode(true);
+            this.shadeElement.classList.add('shade-element');
+            return true;
+        };
+        /**
+         * При каждом движении мыши перемещает this._elem
+         * и записывает текущий элемент под this._elem в _currentTargetElem
+         * @param event
+         */
+        BootstrapDragAvatar.prototype.onDragMove = function (event) {
+            _super.prototype.onDragMove.call(this, event);
+            var target = this.getTargetElem();
+            if (target.classList.contains('row') && target.tagName === 'DIV' && target.lastElementChild !== this._dragZoneElem) {
+                this.currentTargetRow = target;
+                this.currentTargetRowColumnElemnt = null;
+                this.currentTargetRow.appendChild(this.shadeElement);
+                this.shadeElement.style.display = 'block';
+                this._dragZoneElem.classList.add('old-element');
+            }
+            else if (target.classList.contains('form-group') && target.tagName === 'DIV' && target !== this._dragZoneElem && target.previousElementSibling !== this._dragZoneElem) {
+                this.currentTargetRowColumnElemnt = target;
+                this.currentTargetRow = target.parentElement;
+                this.currentTargetRow.insertBefore(this.shadeElement, this.currentTargetRowColumnElemnt);
+                this.shadeElement.style.display = 'block';
+                this._dragZoneElem.classList.add('old-element');
+            }
+            else {
+                this.shadeElement.style.display = 'none';
+                this._dragZoneElem.classList.remove('old-element');
+                document.body.appendChild(this.shadeElement);
+            }
+        };
+        /**
+         * Вспомогательный метод
+         */
+        BootstrapDragAvatar.prototype._destroy = function () {
+            this._elem.parentNode.removeChild(this._elem);
+            if (this.shadeElement.parentElement) {
+                this.shadeElement.parentElement.removeChild(this.shadeElement);
+            }
+        };
+        /**
+         * При любом исходе переноса элемент-клон больше не нужен
+         */
+        BootstrapDragAvatar.prototype.onDragCancel = function () {
+            this._destroy();
+        };
+        BootstrapDragAvatar.prototype.onDragEnd = function () {
+            this._destroy();
+        };
+        BootstrapDragAvatar.prototype.getDragInfo = function (event) {
+            // тут может быть еще какая-то информация, необходимая для обработки конца или процесса переноса
+            return new BootstrapDragInfo(this._currentTargetRow, this._currentTargetRowColumnElemnt, this._shadeElement, this._elem, this._dragZoneElem, this._dragZone);
+        };
+        return BootstrapDragAvatar;
+    })(DragAndDrop.DragAvatar);
+    BootstrapDragAndDrop.BootstrapDragAvatar = BootstrapDragAvatar;
+    var BootstrapDragInfo = (function (_super) {
+        __extends(BootstrapDragInfo, _super);
+        function BootstrapDragInfo(currentTargetRow, currentTargetRowColumnElemnt, shadeElement, elem, dragZoneElem, dragZone) {
+            _super.call(this, elem, dragZoneElem, dragZone);
+            this.currentTargetRow = currentTargetRow;
+            this.currentTargetRowColumnElemnt = currentTargetRowColumnElemnt;
+            this.shadeElement = shadeElement;
+        }
+        return BootstrapDragInfo;
+    })(DragAndDrop.DragInfo);
+    BootstrapDragAndDrop.BootstrapDragInfo = BootstrapDragInfo;
+})(BootstrapDragAndDrop || (BootstrapDragAndDrop = {}));
 
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -390,30 +409,10 @@ var BootstrapDragAndDrop;
             var avatarInfo = avatar.getDragInfo(event);
             // вставить элемент в детей в отсортированном порядке
             var elemToMove = avatar.getDragInfo(event).dragZoneElem;
+            elemToMove.classList.remove('old-element');
             avatar.currentTargetRow.insertBefore(elemToMove, avatar.shadeElement);
             avatar.currentTargetRow.removeChild(avatar.shadeElement);
             avatar.onDragEnd(); // аватар больше не нужен, перенос успешен
-            /*var title = avatarInfo.dragZoneElem.innerHTML; // переносимый заголовок
-      
-            // получить контейнер для узлов дерева, соответствующий точке преземления
-            var ul:HTMLElement = <HTMLElement> this._targetElem.parentElement.getElementsByTagName('UL')[0];
-      
-            if (!ul) { // нет детей, создадим контейнер
-              ul = document.createElement('UL');
-              this._targetElem.parentNode.appendChild(ul);
-            }
-      
-            // вставить новый узел в нужное место среди потомков, в алфавитном порядке
-            var li = null;
-            for (var i = 0; i < ul.children.length; i++) {
-              li = ul.children[i];
-              var childTitle = (<HTMLElement> (<HTMLElement>li).children[0]).innerHTML;
-              if (childTitle > title) {
-                break;
-              }
-            }
-      */
-            /* ul.insertBefore(elemToMove, li);*/
             this._targetElem = null;
         };
         return BootstrapDropTarget;

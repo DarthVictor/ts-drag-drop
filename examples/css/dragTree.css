@@ -2,7 +2,7 @@
     cursor: pointer;
     font-weight: bold;
 }
-/* #tree span.hover, для приоритета перед :hover также добавлен подселектор */
+/* #tree span.hover, РґР»СЏ РїСЂРёРѕСЂРёС‚РµС‚Р° РїРµСЂРµРґ :hover С‚Р°РєР¶Рµ РґРѕР±Р°РІР»РµРЅ РїРѕРґСЃРµР»РµРєС‚РѕСЂ */
 
 #tree span.hover,
 #tree span.hover:hover {
@@ -16,7 +16,7 @@ span.avatar {
     border: 1px dotted black;
     background: white;
     cursor: pointer;
-    opacity: 0.6;
+    opacity: 0.8;
     filter: progid: DXImageTransform.Microsoft.Alpha(opacity=60);
     /* IE opacity */
 }

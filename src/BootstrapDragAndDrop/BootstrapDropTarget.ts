@@ -42,31 +42,10 @@ module BootstrapDragAndDrop {
 
       // вставить элемент в детей в отсортированном порядке
       var elemToMove = avatar.getDragInfo(event).dragZoneElem;
+      elemToMove.classList.remove('old-element');
       avatar.currentTargetRow.insertBefore(elemToMove, avatar.shadeElement)
       avatar.currentTargetRow.removeChild(avatar.shadeElement)
       avatar.onDragEnd(); // аватар больше не нужен, перенос успешен
-      /*var title = avatarInfo.dragZoneElem.innerHTML; // переносимый заголовок
-
-      // получить контейнер для узлов дерева, соответствующий точке преземления
-      var ul:HTMLElement = <HTMLElement> this._targetElem.parentElement.getElementsByTagName('UL')[0];
-
-      if (!ul) { // нет детей, создадим контейнер
-        ul = document.createElement('UL');
-        this._targetElem.parentNode.appendChild(ul);
-      }
-
-      // вставить новый узел в нужное место среди потомков, в алфавитном порядке
-      var li = null;
-      for (var i = 0; i < ul.children.length; i++) {
-        li = ul.children[i];
-        var childTitle = (<HTMLElement> (<HTMLElement>li).children[0]).innerHTML;
-        if (childTitle > title) {
-          break;
-        }
-      }
-*/
-      /* ul.insertBefore(elemToMove, li);*/
-
       this._targetElem = null;
     }
   }
