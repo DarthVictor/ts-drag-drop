@@ -2,6 +2,9 @@
  * Created by DarthVictor on 27.06.2015.
  * https://learn.javascript.ru/drag-and-drop-plus
  */
+/// <reference path="../Lib/closest.ts" />
+/// <reference path="../Lib/getCoords.ts" />
+
 /// <reference path="../DragAndDrop/DragAndDrop.ts" />
 /// <reference path="../DragAndDrop/DragAvatar.ts" />
 /// <reference path="../DragAndDrop/DropTarget.ts" />
@@ -14,7 +17,7 @@ module BootstrapDragAndDrop {
     protected _currentTargetRowColumnElemnt: DragAndDrop.HTMLElementWithDropTarget; // другой элемент текущей строки, над которым мы находимся
     protected _shadeElement : HTMLElement;
 
-    public initFromEvent(downX:number, downY:number, event:MouseEvent):boolean {
+    public initFromEvent(downX: number, downY: number, event: MouseEvent):boolean {
       if (( <HTMLElement> event.target).tagName != 'LABEL') return false;
 
       this._dragZoneElem = (<HTMLElement> event.target).parentElement;
@@ -42,9 +45,18 @@ module BootstrapDragAndDrop {
      * и записывает текущий элемент под this._elem в _currentTargetElem
      * @param event
      */
-    public onDragMove(event:MouseEvent): void {
+    public onDragMove(event: MouseEvent): void {
       super.onDragMove(event);
+      var targetRowCoords, targetRowHeight;
       var target = this.getTargetElem();
+      this._currentTargetRow = <DragAndDrop.HTMLElementWithDropTarget> Lib.closest(target, '.row.drop-target');
+      if(this._currentTargetRow != null){
+        targetRowCoords = Lib.getCoords(target)
+        targetRowHeight = this._currentTargetRow.offsetHeight;
+        //console.log(event.pageX - this._shiftX - targetRowCoords.left, event.pageY - this._shiftY - targetRowCoords.top,
+        //  targetRowCoords, event.pageX - targetRowCoords.left, event.pageY - targetRowCoords.top)
+      }
+      /*
       if(target.classList.contains('row') && // навели на строку - вставляем в конец,
         target.tagName === 'DIV' &&          // но только если вставляемый элемент не был в конце
         target.lastElementChild !== this._dragZoneElem) {
@@ -64,11 +76,12 @@ module BootstrapDragAndDrop {
             this._shadeElement.style.display = 'block';
             this._dragZoneElem.classList.add('old-element');
       }
-      else {
+      else {*/
             this._shadeElement.style.display = 'none';
             this._dragZoneElem.classList.remove('old-element');
             document.body.appendChild(this._shadeElement);
-      }
+      /*}*/
+
     }
 
     /**

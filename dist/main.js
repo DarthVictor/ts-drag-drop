@@ -1,4 +1,56 @@
+/**
+ * Created by DarthVictor on 27.06.2015.
+ * https://learn.javascript.ru/drag-and-drop-plus
+ */
 
+
+
+/**
+ * Created by DarthVictor on 25.07.2015.
+ * https://learn.javascript.ru/drag-and-drop-plus
+ */
+/// <reference path="Lib.ts" />
+var Lib;
+(function (Lib) {
+    function closest(elem, selector) {
+        var matchesSelector = elem.matches || elem.webkitMatchesSelector || elem.mozMatchesSelector || elem.msMatchesSelector;
+        while (elem) {
+            if (matchesSelector.bind(elem)(selector)) {
+                return elem;
+            }
+            else {
+                elem = elem.parentElement;
+            }
+        }
+        return null;
+    }
+    Lib.closest = closest;
+})(Lib || (Lib = {}));
+
+/**
+ * Created by DarthVictor on 14.07.2015.
+ * https://learn.javascript.ru/drag-and-drop-plus
+ */
+/// <reference path="Lib.ts" />
+var Lib;
+(function (Lib) {
+    function getCoords(elem) {
+        var box = elem.getBoundingClientRect();
+        var body = document.body;
+        var docElem = document.documentElement;
+        var scrollTop = window.pageYOffset || docElem.scrollTop || body.scrollTop;
+        var scrollLeft = window.pageXOffset || docElem.scrollLeft || body.scrollLeft;
+        var clientTop = docElem.clientTop || body.clientTop || 0;
+        var clientLeft = docElem.clientLeft || body.clientLeft || 0;
+        var top = box.top + scrollTop - clientTop;
+        var left = box.left + scrollLeft - clientLeft;
+        return {
+            top: Math.round(top),
+            left: Math.round(left)
+        };
+    }
+    Lib.getCoords = getCoords;
+})(Lib || (Lib = {}));
 
 
 
@@ -96,167 +148,6 @@ var DragAndDrop;
 /// <reference path="DragAndDrop.ts" />
 var DragAndDrop;
 (function (DragAndDrop) {
-    var DragManager = (function () {
-        function DragManager() {
-            document.ondragstart = function () {
-                return false;
-            };
-            var self = this;
-            document.onmousemove = function (e) {
-                return self.onMouseMove(e);
-            };
-            document.onmouseup = function (e) {
-                return self.onMouseUp(e);
-            };
-            document.onmousedown = function (e) {
-                return self.onMouseDown(e);
-            };
-        }
-        DragManager.getInstance = function () {
-            return this._instance;
-        };
-        DragManager.prototype.onMouseDown = function (e) {
-            if (e.which != 1) {
-                return false;
-            }
-            this.dragZone = this.findDragZone(e);
-            if (!this.dragZone) {
-                return;
-            }
-            // запомним, что элемент нажат на текущих координатах pageX/pageY
-            this.downX = e.pageX;
-            this.downY = e.pageY;
-            return false;
-        };
-        DragManager.prototype.onMouseMove = function (e) {
-            if (!this.dragZone)
-                return; // элемент не зажат
-            if (!this.avatar) {
-                if (Math.abs(e.pageX - this.downX) < 3 && Math.abs(e.pageY - this.downY) < 3) {
-                    return;
-                }
-                // попробовать захватить элемент
-                this.avatar = this.dragZone.onDragStart(this.downX, this.downY, e);
-                if (!this.avatar) {
-                    this.cleanUp(); // очистить приватные переменные, связанные с переносом
-                    return;
-                }
-            }
-            // отобразить перенос объекта, перевычислить текущий элемент под курсором
-            this.avatar.onDragMove(e);
-            // найти новый dropTarget под курсором: newDropTarget
-            // текущий dropTarget остался от прошлого mousemove
-            // *оба значения: и newDropTarget и dropTarget могут быть null
-            var newDropTarget = this.findDropTarget(e);
-            if (newDropTarget != this.dropTarget) {
-                // уведомить старую и новую зоны-цели о том, что с них ушли/на них зашли
-                this.dropTarget && this.dropTarget.onDragLeave(newDropTarget, this.avatar, e);
-                newDropTarget && newDropTarget.onDragEnter(this.dropTarget, this.avatar, e);
-            }
-            this.dropTarget = newDropTarget;
-            this.dropTarget && this.dropTarget.onDragMove(this.avatar, e);
-            return false;
-        };
-        DragManager.prototype.onMouseUp = function (e) {
-            if (e.which != 1) {
-                return false;
-            }
-            if (this.avatar) {
-                if (this.dropTarget) {
-                    // завершить перенос и избавиться от аватара, если это нужно
-                    // эта функция обязана вызвать avatar.onDragEnd/onDragCancel
-                    this.dropTarget.onDragEnd(this.avatar, e);
-                }
-                else {
-                    this.avatar.onDragCancel();
-                }
-            }
-            this.cleanUp();
-        };
-        DragManager.prototype.cleanUp = function () {
-            // очистить все промежуточные объекты
-            this.dragZone = this.avatar = this.dropTarget = null;
-        };
-        DragManager.prototype.findDragZone = function (event) {
-            var elem = event.target;
-            while (elem != document && !elem.dragZone) {
-                elem = elem.parentNode;
-            }
-            return elem.dragZone;
-        };
-        DragManager.prototype.findDropTarget = function (event) {
-            // получить элемент под аватаром
-            var elem = this.avatar.getTargetElem();
-            while (elem != document && !elem.dropTarget) {
-                elem = elem.parentNode;
-            }
-            if (!elem.dropTarget) {
-                return null;
-            }
-            return elem.dropTarget;
-        };
-        DragManager._instance = new DragManager();
-        return DragManager;
-    })();
-    DragAndDrop.dragManager = DragManager.getInstance();
-})(DragAndDrop || (DragAndDrop = {}));
-
-/**
- * Created by DarthVictor on 27.06.2015.
- * https://learn.javascript.ru/drag-and-drop-plus
- */
-/// <reference path="DragAndDrop.ts" />
-var DragAndDrop;
-(function (DragAndDrop) {
-    /**
-     * Зона, из которой можно переносить объекты
-     * Умеет обрабатывать начало переноса на себе и создавать "аватар"
-     */
-    var DragZone = (function () {
-        /*
-         * @param elem DOM-элемент, к которому привязана зона
-         */
-        function DragZone(elem) {
-            elem.dragZone = this;
-            this._elem = elem;
-        }
-        /**
-         * Создать аватар, соответствующий зоне.
-         * У разных зон могут быть разные типы аватаров
-         */
-        DragZone.prototype._makeAvatar = function () {
-            throw new TypeError('Unimplemented method');
-        };
-        /**
-         * Обработать начало переноса.
-         *
-         * Получает координаты изначального нажатия мышки, событие.
-         *
-         * @param downX Координата изначального нажатия по X
-         * @param downY Координата изначального нажатия по Y
-         * @param event текущее событие мыши
-         *
-         * @return аватар или false, если захватить с данной точки ничего нельзя
-         */
-        DragZone.prototype.onDragStart = function (downX, downY, event) {
-            var avatar = this._makeAvatar();
-            if (!avatar.initFromEvent(downX, downY, event)) {
-                return null;
-            }
-            return avatar;
-        };
-        return DragZone;
-    })();
-    DragAndDrop.DragZone = DragZone;
-})(DragAndDrop || (DragAndDrop = {}));
-
-/**
- * Created by DarthVictor on 27.06.2015.
- * https://learn.javascript.ru/drag-and-drop-plus
- */
-/// <reference path="DragAndDrop.ts" />
-var DragAndDrop;
-(function (DragAndDrop) {
     /**
      * Зона, в которую объекты можно класть
      * Занимается индикацией передвижения по себе, добавлением в себя
@@ -339,21 +230,67 @@ var DragAndDrop;
  * Created by DarthVictor on 27.06.2015.
  * https://learn.javascript.ru/drag-and-drop-plus
  */
+/// <reference path="DragAndDrop.ts" />
+var DragAndDrop;
+(function (DragAndDrop) {
+    /**
+     * Зона, из которой можно переносить объекты
+     * Умеет обрабатывать начало переноса на себе и создавать "аватар"
+     */
+    var DragZone = (function () {
+        /*
+         * @param elem DOM-элемент, к которому привязана зона
+         */
+        function DragZone(elem) {
+            elem.dragZone = this;
+            this._elem = elem;
+        }
+        /**
+         * Создать аватар, соответствующий зоне.
+         * У разных зон могут быть разные типы аватаров
+         */
+        DragZone.prototype._makeAvatar = function () {
+            throw new TypeError('Unimplemented method');
+        };
+        /**
+         * Обработать начало переноса.
+         *
+         * Получает координаты изначального нажатия мышки, событие.
+         *
+         * @param downX Координата изначального нажатия по X
+         * @param downY Координата изначального нажатия по Y
+         * @param event текущее событие мыши
+         *
+         * @return аватар или false, если захватить с данной точки ничего нельзя
+         */
+        DragZone.prototype.onDragStart = function (downX, downY, event) {
+            var avatar = this._makeAvatar();
+            if (!avatar.initFromEvent(downX, downY, event)) {
+                return null;
+            }
+            return avatar;
+        };
+        return DragZone;
+    })();
+    DragAndDrop.DragZone = DragZone;
+})(DragAndDrop || (DragAndDrop = {}));
 
 /**
  * Created by DarthVictor on 27.06.2015.
  * https://learn.javascript.ru/drag-and-drop-plus
  */
-/// <reference path="../DragAndDrop/DragAndDrop.ts" />
-/// <reference path="../DragAndDrop/DragAvatar.ts" />
-/// <reference path="../DragAndDrop/DropTarget.ts" />
-/// <reference path="../DragAndDrop/DragZone.ts" />
+/// <reference path="../Lib/closest.ts" />
+/// <reference path="../Lib/getCoords.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+/// <reference path="../DragAndDrop/DragAndDrop.ts" />
+/// <reference path="../DragAndDrop/DragAvatar.ts" />
+/// <reference path="../DragAndDrop/DropTarget.ts" />
+/// <reference path="../DragAndDrop/DragZone.ts" />
 /// <reference path="BootstrapDragAndDrop.ts" />
 var BootstrapDragAndDrop;
 (function (BootstrapDragAndDrop) {
@@ -388,26 +325,38 @@ var BootstrapDragAndDrop;
          */
         BootstrapDragAvatar.prototype.onDragMove = function (event) {
             _super.prototype.onDragMove.call(this, event);
+            var targetRowCoords, targetRowHeight;
             var target = this.getTargetElem();
-            if (target.classList.contains('row') && target.tagName === 'DIV' && target.lastElementChild !== this._dragZoneElem) {
-                this._currentTargetRow = target;
-                this._currentTargetRowColumnElemnt = null;
-                this._currentTargetRow.appendChild(this._shadeElement);
-                this._shadeElement.style.display = 'block';
-                this._dragZoneElem.classList.add('old-element');
+            this._currentTargetRow = Lib.closest(target, '.row.drop-target');
+            if (this._currentTargetRow != null) {
+                targetRowCoords = Lib.getCoords(target);
+                targetRowHeight = this._currentTargetRow.offsetHeight;
             }
-            else if (target.classList.contains('form-group') && target.tagName === 'DIV' && target !== this._dragZoneElem && target.previousElementSibling !== this._dragZoneElem) {
-                this._currentTargetRowColumnElemnt = target;
-                this._currentTargetRow = target.parentElement;
-                this._currentTargetRow.insertBefore(this._shadeElement, this._currentTargetRowColumnElemnt);
-                this._shadeElement.style.display = 'block';
-                this._dragZoneElem.classList.add('old-element');
+            /*
+            if(target.classList.contains('row') && // навели на строку - вставляем в конец,
+              target.tagName === 'DIV' &&          // но только если вставляемый элемент не был в конце
+              target.lastElementChild !== this._dragZoneElem) {
+                  this._currentTargetRow = target;
+                  this._currentTargetRowColumnElemnt = null;
+                  this._currentTargetRow.appendChild(this._shadeElement);
+                  this._shadeElement.style.display = 'block';
+                  this._dragZoneElem.classList.add('old-element');
             }
-            else {
-                this._shadeElement.style.display = 'none';
-                this._dragZoneElem.classList.remove('old-element');
-                document.body.appendChild(this._shadeElement);
+            else if (target.classList.contains('form-group') && // навели на элемент - вставляем перед ним,
+              target.tagName === 'DIV' &&
+              target !== this._dragZoneElem &&              // но только если навели не на самого себя
+              target.previousElementSibling !== this._dragZoneElem) {  // и если вставляемый элемент не был до этого перед ним
+                  this._currentTargetRowColumnElemnt = target;
+                  this._currentTargetRow = <DragAndDrop.HTMLElementWithDropTarget> target.parentElement;
+                  this._currentTargetRow.insertBefore(this._shadeElement, this._currentTargetRowColumnElemnt);
+                  this._shadeElement.style.display = 'block';
+                  this._dragZoneElem.classList.add('old-element');
             }
+            else {*/
+            this._shadeElement.style.display = 'none';
+            this._dragZoneElem.classList.remove('old-element');
+            document.body.appendChild(this._shadeElement);
+            /*}*/
         };
         /**
          * Вспомогательный метод
@@ -550,49 +499,116 @@ var BootstrapDragAndDrop;
 })(BootstrapDragAndDrop || (BootstrapDragAndDrop = {}));
 
 /**
- * Created by DarthVictor on 14.07.2015.
+ * Created by DarthVictor on 27.06.2015.
  * https://learn.javascript.ru/drag-and-drop-plus
  */
-/// <reference path="Lib.ts" />
-var Lib;
-(function (Lib) {
-    function getCoords(elem) {
-        var box = elem.getBoundingClientRect();
-        var body = document.body;
-        var docElem = document.documentElement;
-        var scrollTop = window.pageYOffset || docElem.scrollTop || body.scrollTop;
-        var scrollLeft = window.pageXOffset || docElem.scrollLeft || body.scrollLeft;
-        var clientTop = docElem.clientTop || body.clientTop || 0;
-        var clientLeft = docElem.clientLeft || body.clientLeft || 0;
-        var top = box.top + scrollTop - clientTop;
-        var left = box.left + scrollLeft - clientLeft;
-        return {
-            top: Math.round(top),
-            left: Math.round(left)
-        };
-    }
-    Lib.getCoords = getCoords;
-})(Lib || (Lib = {}));
-
-/**
- * Created by DarthVictor on 14.07.2015.
- * https://learn.javascript.ru/drag-and-drop-plus
- */
-/// <reference path="Lib.ts" />
-var Lib;
-(function (Lib) {
-    function getElementUnderClientXY(elem, clientX, clientY) {
-        var display = elem.style.display || '';
-        elem.style.display = 'none';
-        var target = document.elementFromPoint(clientX, clientY);
-        elem.style.display = display;
-        if (!target || target == document) {
-            target = document.body; // поправить значение, чтобы был именно элемент
+/// <reference path="DragAndDrop.ts" />
+var DragAndDrop;
+(function (DragAndDrop) {
+    var DragManager = (function () {
+        function DragManager() {
+            document.ondragstart = function () {
+                return false;
+            };
+            var self = this;
+            document.onmousemove = function (e) {
+                return self.onMouseMove(e);
+            };
+            document.onmouseup = function (e) {
+                return self.onMouseUp(e);
+            };
+            document.onmousedown = function (e) {
+                return self.onMouseDown(e);
+            };
         }
-        return target;
-    }
-    Lib.getElementUnderClientXY = getElementUnderClientXY;
-})(Lib || (Lib = {}));
+        DragManager.getInstance = function () {
+            return this._instance;
+        };
+        DragManager.prototype.onMouseDown = function (e) {
+            if (e.which != 1) {
+                return false;
+            }
+            this.dragZone = this.findDragZone(e);
+            if (!this.dragZone) {
+                return;
+            }
+            // запомним, что элемент нажат на текущих координатах pageX/pageY
+            this.downX = e.pageX;
+            this.downY = e.pageY;
+            return false;
+        };
+        DragManager.prototype.onMouseMove = function (e) {
+            if (!this.dragZone)
+                return; // элемент не зажат
+            if (!this.avatar) {
+                if (Math.abs(e.pageX - this.downX) < 3 && Math.abs(e.pageY - this.downY) < 3) {
+                    return;
+                }
+                // попробовать захватить элемент
+                this.avatar = this.dragZone.onDragStart(this.downX, this.downY, e);
+                if (!this.avatar) {
+                    this.cleanUp(); // очистить приватные переменные, связанные с переносом
+                    return;
+                }
+            }
+            // отобразить перенос объекта, перевычислить текущий элемент под курсором
+            this.avatar.onDragMove(e);
+            // найти новый dropTarget под курсором: newDropTarget
+            // текущий dropTarget остался от прошлого mousemove
+            // *оба значения: и newDropTarget и dropTarget могут быть null
+            var newDropTarget = this.findDropTarget(e);
+            if (newDropTarget != this.dropTarget) {
+                // уведомить старую и новую зоны-цели о том, что с них ушли/на них зашли
+                this.dropTarget && this.dropTarget.onDragLeave(newDropTarget, this.avatar, e);
+                newDropTarget && newDropTarget.onDragEnter(this.dropTarget, this.avatar, e);
+            }
+            this.dropTarget = newDropTarget;
+            this.dropTarget && this.dropTarget.onDragMove(this.avatar, e);
+            return false;
+        };
+        DragManager.prototype.onMouseUp = function (e) {
+            if (e.which != 1) {
+                return false;
+            }
+            if (this.avatar) {
+                if (this.dropTarget) {
+                    // завершить перенос и избавиться от аватара, если это нужно
+                    // эта функция обязана вызвать avatar.onDragEnd/onDragCancel
+                    this.dropTarget.onDragEnd(this.avatar, e);
+                }
+                else {
+                    this.avatar.onDragCancel();
+                }
+            }
+            this.cleanUp();
+        };
+        DragManager.prototype.cleanUp = function () {
+            // очистить все промежуточные объекты
+            this.dragZone = this.avatar = this.dropTarget = null;
+        };
+        DragManager.prototype.findDragZone = function (event) {
+            var elem = event.target;
+            while (elem != document && !elem.dragZone) {
+                elem = elem.parentNode;
+            }
+            return elem.dragZone;
+        };
+        DragManager.prototype.findDropTarget = function (event) {
+            // получить элемент под аватаром
+            var elem = this.avatar.getTargetElem();
+            while (elem != document && !elem.dropTarget) {
+                elem = elem.parentNode;
+            }
+            if (!elem.dropTarget) {
+                return null;
+            }
+            return elem.dropTarget;
+        };
+        DragManager._instance = new DragManager();
+        return DragManager;
+    })();
+    DragAndDrop.dragManager = DragManager.getInstance();
+})(DragAndDrop || (DragAndDrop = {}));
 
 
 
@@ -773,3 +789,23 @@ var TreeDragAndDrop;
     }
     TreeDragAndDrop.Main = Main;
 })(TreeDragAndDrop || (TreeDragAndDrop = {}));
+
+/**
+ * Created by DarthVictor on 14.07.2015.
+ * https://learn.javascript.ru/drag-and-drop-plus
+ */
+/// <reference path="Lib.ts" />
+var Lib;
+(function (Lib) {
+    function getElementUnderClientXY(elem, clientX, clientY) {
+        var display = elem.style.display || '';
+        elem.style.display = 'none';
+        var target = document.elementFromPoint(clientX, clientY);
+        elem.style.display = display;
+        if (!target || target == document) {
+            target = document.body; // поправить значение, чтобы был именно элемент
+        }
+        return target;
+    }
+    Lib.getElementUnderClientXY = getElementUnderClientXY;
+})(Lib || (Lib = {}));
