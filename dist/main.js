@@ -294,6 +294,21 @@ var __extends = this.__extends || function (d, b) {
 /// <reference path="BootstrapDragAndDrop.ts" />
 var BootstrapDragAndDrop;
 (function (BootstrapDragAndDrop) {
+    var RowClass;
+    (function (RowClass) {
+        RowClass[RowClass["Before"] = 0] = "Before";
+        RowClass[RowClass["Current"] = 1] = "Current";
+        RowClass[RowClass["After"] = 2] = "After";
+    })(RowClass || (RowClass = {}));
+    ;
+    function getRowClass(_relativePositionOnRow) {
+        if (_relativePositionOnRow < 0.25)
+            return 0 /* Before */;
+        else if (_relativePositionOnRow > 0.75)
+            return 2 /* After */;
+        else
+            return 1 /* Current */;
+    }
     var BootstrapDragAvatar = (function (_super) {
         __extends(BootstrapDragAvatar, _super);
         function BootstrapDragAvatar() {
@@ -325,19 +340,63 @@ var BootstrapDragAndDrop;
          */
         BootstrapDragAvatar.prototype.onDragMove = function (event) {
             _super.prototype.onDragMove.call(this, event);
-            var targetRowCoords, targetRowHeight;
+            var targetRow, targetRowHeight, relativePositionOnRow, newRowClass, newShadeRow;
             var target = this.getTargetElem();
-            this._currentTargetRow = Lib.closest(target, '.row.drop-target');
-            if (this._currentTargetRow != null) {
-                targetRowCoords = Lib.getCoords(target);
-                targetRowHeight = this._currentTargetRow.offsetHeight;
+            targetRow = Lib.closest(target, '.row.drop-target');
+            if (targetRow != null) {
+                targetRowHeight = targetRow.offsetHeight;
+                relativePositionOnRow = (event.pageY - Lib.getCoords(target).top) / targetRowHeight;
+                newRowClass = getRowClass(relativePositionOnRow);
+                this._currentRowClass = getRowClass(relativePositionOnRow);
+                if (this._currentRowClass !== newRowClass) {
+                    this._dragZoneElem.classList.add('old-element');
+                    // вставка строк в перед или после текущей строки
+                    if (this._currentRowClass === 0 /* Before */ || this._currentRowClass === 2 /* After */) {
+                        newShadeRow = targetRow.cloneNode();
+                        newShadeRow.appendChild(this._shadeElement);
+                        if (this._currentRowClass === 0 /* Before */) {
+                            targetRow.parentElement.insertBefore(newShadeRow, targetRow);
+                        }
+                        else {
+                            targetRow.parentElement.insertBefore(newShadeRow, targetRow.nextSibling);
+                        }
+                        this._currentTargetRow = newShadeRow;
+                        this._currentTargetRowColumnElement = null;
+                    }
+                    else if (this._currentRowClass === 1 /* Current */) {
+                        if (target.classList.contains('row') && target.tagName === 'DIV' && target.lastElementChild !== this._dragZoneElem) {
+                            this._currentTargetRow = target;
+                            this._currentTargetRowColumnElement = null;
+                            this._currentTargetRow.appendChild(this._shadeElement);
+                        }
+                        else if (target.classList.contains('form-group') && target.tagName === 'DIV' && target !== this._dragZoneElem && target.previousElementSibling !== this._dragZoneElem) {
+                            this._currentTargetRowColumnElement = target;
+                            this._currentTargetRow = target.parentElement;
+                            this._currentTargetRow.insertBefore(this._shadeElement, this._currentTargetRowColumnElement);
+                        }
+                    }
+                    // действия с вставлявшимися ранее строками
+                    if (this._currentRowClass === 0 /* Before */ || this._currentRowClass === 2 /* After */) {
+                        this._shadeRow.parentElement.removeChild(this._shadeRow);
+                    }
+                    if (newShadeRow) {
+                        this._shadeRow = newShadeRow;
+                    }
+                }
+            }
+            else {
+                this._dragZoneElem.classList.remove('old-element');
+                this._shadeElement.style.display = 'none';
+                if (this._shadeRow) {
+                    this._shadeRow.style.display = 'none';
+                }
             }
             /*
             if(target.classList.contains('row') && // навели на строку - вставляем в конец,
               target.tagName === 'DIV' &&          // но только если вставляемый элемент не был в конце
               target.lastElementChild !== this._dragZoneElem) {
                   this._currentTargetRow = target;
-                  this._currentTargetRowColumnElemnt = null;
+                  this._currentTargetRowColumnElement = null;
                   this._currentTargetRow.appendChild(this._shadeElement);
                   this._shadeElement.style.display = 'block';
                   this._dragZoneElem.classList.add('old-element');
@@ -346,17 +405,17 @@ var BootstrapDragAndDrop;
               target.tagName === 'DIV' &&
               target !== this._dragZoneElem &&              // но только если навели не на самого себя
               target.previousElementSibling !== this._dragZoneElem) {  // и если вставляемый элемент не был до этого перед ним
-                  this._currentTargetRowColumnElemnt = target;
+                  this._currentTargetRowColumnElement = target;
                   this._currentTargetRow = <DragAndDrop.HTMLElementWithDropTarget> target.parentElement;
-                  this._currentTargetRow.insertBefore(this._shadeElement, this._currentTargetRowColumnElemnt);
+                  this._currentTargetRow.insertBefore(this._shadeElement, this._currentTargetRowColumnElement);
                   this._shadeElement.style.display = 'block';
                   this._dragZoneElem.classList.add('old-element');
             }
-            else {*/
-            this._shadeElement.style.display = 'none';
-            this._dragZoneElem.classList.remove('old-element');
-            document.body.appendChild(this._shadeElement);
-            /*}*/
+            else {
+                  this._shadeElement.style.display = 'none';
+                  this._dragZoneElem.classList.remove('old-element');
+                  document.body.appendChild(this._shadeElement);
+            }*/
         };
         /**
          * Вспомогательный метод
@@ -378,17 +437,19 @@ var BootstrapDragAndDrop;
         };
         BootstrapDragAvatar.prototype.getDragInfo = function (event) {
             // тут может быть еще какая-то информация, необходимая для обработки конца или процесса переноса
-            return new BootstrapDragInfo(this._currentTargetRow, this._currentTargetRowColumnElemnt, this._shadeElement, this._elem, this._dragZoneElem, this._dragZone);
+            return new BootstrapDragInfo(this._shadeElement, this._elem, this._dragZoneElem, this._dragZone);
         };
         return BootstrapDragAvatar;
     })(DragAndDrop.DragAvatar);
     BootstrapDragAndDrop.BootstrapDragAvatar = BootstrapDragAvatar;
     var BootstrapDragInfo = (function (_super) {
         __extends(BootstrapDragInfo, _super);
-        function BootstrapDragInfo(currentTargetRow, currentTargetRowColumnElemnt, shadeElement, elem, dragZoneElem, dragZone) {
+        function BootstrapDragInfo(//currentTargetRow: DragAndDrop.HTMLElementWithDropTarget,
+            //currentTargetRowColumnElemnt: DragAndDrop.HTMLElementWithDropTarget,
+            shadeElement, elem, dragZoneElem, dragZone) {
             _super.call(this, elem, dragZoneElem, dragZone);
-            this.currentTargetRow = currentTargetRow;
-            this.currentTargetRowColumnElemnt = currentTargetRowColumnElemnt;
+            //this.currentTargetRow = currentTargetRow;
+            //this.currentTargetRowColumnElemnt = currentTargetRowColumnElemnt;
             this.shadeElement = shadeElement;
         }
         return BootstrapDragInfo;
@@ -610,6 +671,26 @@ var DragAndDrop;
     DragAndDrop.dragManager = DragManager.getInstance();
 })(DragAndDrop || (DragAndDrop = {}));
 
+/**
+ * Created by DarthVictor on 14.07.2015.
+ * https://learn.javascript.ru/drag-and-drop-plus
+ */
+/// <reference path="Lib.ts" />
+var Lib;
+(function (Lib) {
+    function getElementUnderClientXY(elem, clientX, clientY) {
+        var display = elem.style.display || '';
+        elem.style.display = 'none';
+        var target = document.elementFromPoint(clientX, clientY);
+        elem.style.display = display;
+        if (!target || target == document) {
+            target = document.body; // поправить значение, чтобы был именно элемент
+        }
+        return target;
+    }
+    Lib.getElementUnderClientXY = getElementUnderClientXY;
+})(Lib || (Lib = {}));
+
 
 
 /**
@@ -789,23 +870,3 @@ var TreeDragAndDrop;
     }
     TreeDragAndDrop.Main = Main;
 })(TreeDragAndDrop || (TreeDragAndDrop = {}));
-
-/**
- * Created by DarthVictor on 14.07.2015.
- * https://learn.javascript.ru/drag-and-drop-plus
- */
-/// <reference path="Lib.ts" />
-var Lib;
-(function (Lib) {
-    function getElementUnderClientXY(elem, clientX, clientY) {
-        var display = elem.style.display || '';
-        elem.style.display = 'none';
-        var target = document.elementFromPoint(clientX, clientY);
-        elem.style.display = display;
-        if (!target || target == document) {
-            target = document.body; // поправить значение, чтобы был именно элемент
-        }
-        return target;
-    }
-    Lib.getElementUnderClientXY = getElementUnderClientXY;
-})(Lib || (Lib = {}));

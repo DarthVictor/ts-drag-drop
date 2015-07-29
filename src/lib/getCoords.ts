@@ -4,7 +4,6 @@
  */
 /// <reference path="Lib.ts" />
 module Lib {
-
   export function getCoords(elem:HTMLElement) {
     var box = elem.getBoundingClientRect();
 

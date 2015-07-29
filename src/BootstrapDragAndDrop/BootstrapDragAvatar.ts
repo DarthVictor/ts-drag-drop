@@ -12,10 +12,19 @@
 
 /// <reference path="BootstrapDragAndDrop.ts" />
 module BootstrapDragAndDrop {
+  enum RowClass  {Before, Current, After};
+  function getRowClass(_relativePositionOnRow: number) : RowClass {
+    if(_relativePositionOnRow < 0.25) return RowClass.Before;
+    else if(_relativePositionOnRow > 0.75) return RowClass.After;
+    else return RowClass.Current;
+  }
+
   export class BootstrapDragAvatar extends DragAndDrop.DragAvatar {
     protected _currentTargetRow: DragAndDrop.HTMLElementWithDropTarget; // элемент текущей строки
-    protected _currentTargetRowColumnElemnt: DragAndDrop.HTMLElementWithDropTarget; // другой элемент текущей строки, над которым мы находимся
+    protected _currentTargetRowColumnElement: DragAndDrop.HTMLElementWithDropTarget; // другой элемент текущей строки, над которым мы находимся
     protected _shadeElement : HTMLElement;
+    protected _shadeRow : HTMLElement;
+    private _currentRowClass: RowClass
 
     public initFromEvent(downX: number, downY: number, event: MouseEvent):boolean {
       if (( <HTMLElement> event.target).tagName != 'LABEL') return false;
@@ -47,21 +56,75 @@ module BootstrapDragAndDrop {
      */
     public onDragMove(event: MouseEvent): void {
       super.onDragMove(event);
-      var targetRowCoords, targetRowHeight;
+      var targetRow : HTMLElement,
+          targetRowHeight : number,
+          relativePositionOnRow : number,
+          newRowClass: RowClass,
+          newShadeRow: HTMLElement;
       var target = this.getTargetElem();
-      this._currentTargetRow = <DragAndDrop.HTMLElementWithDropTarget> Lib.closest(target, '.row.drop-target');
-      if(this._currentTargetRow != null){
-        targetRowCoords = Lib.getCoords(target)
-        targetRowHeight = this._currentTargetRow.offsetHeight;
-        //console.log(event.pageX - this._shiftX - targetRowCoords.left, event.pageY - this._shiftY - targetRowCoords.top,
-        //  targetRowCoords, event.pageX - targetRowCoords.left, event.pageY - targetRowCoords.top)
+      targetRow = Lib.closest(target, '.row.drop-target');
+      if(targetRow != null){
+        targetRowHeight = targetRow.offsetHeight;
+        relativePositionOnRow = (event.pageY - Lib.getCoords(target).top)/targetRowHeight
+
+        newRowClass = getRowClass(relativePositionOnRow);
+        this._currentRowClass = getRowClass(relativePositionOnRow);
+        if(this._currentRowClass !== newRowClass){
+          this._dragZoneElem.classList.add('old-element');
+          // вставка строк в перед или после текущей строки
+          if(this._currentRowClass === RowClass.Before || this._currentRowClass === RowClass.After){
+            newShadeRow = <HTMLElement> targetRow.cloneNode();
+            newShadeRow.appendChild(this._shadeElement);
+            if(this._currentRowClass === RowClass.Before){
+              targetRow.parentElement.insertBefore(newShadeRow, targetRow)
+            }
+            else{
+              targetRow.parentElement.insertBefore(newShadeRow, targetRow.nextSibling)
+            }
+            this._currentTargetRow =  <DragAndDrop.HTMLElementWithDropTarget> newShadeRow;
+            this._currentTargetRowColumnElement = null;
+          }
+          else if(this._currentRowClass === RowClass.Current){ //вставка в текущую строку
+            if(target.classList.contains('row') && // навели на строку - вставляем в конец,
+              target.tagName === 'DIV' &&          // но только если вставляемый элемент не был в конце
+              target.lastElementChild !== this._dragZoneElem) {
+              this._currentTargetRow = target;
+              this._currentTargetRowColumnElement = null;
+              this._currentTargetRow.appendChild(this._shadeElement);
+            }
+            else if (target.classList.contains('form-group') && // навели на элемент - вставляем перед ним,
+              target.tagName === 'DIV' &&
+              target !== this._dragZoneElem &&              // но только если навели не на самого себя
+              target.previousElementSibling !== this._dragZoneElem) {  // и если вставляемый элемент не был до этого перед ним
+              this._currentTargetRowColumnElement = target;
+              this._currentTargetRow = <DragAndDrop.HTMLElementWithDropTarget> target.parentElement;
+              this._currentTargetRow.insertBefore(this._shadeElement, this._currentTargetRowColumnElement);
+            }
+          }
+
+          // действия с вставлявшимися ранее строками
+          if(this._currentRowClass === RowClass.Before || this._currentRowClass === RowClass.After){
+            this._shadeRow.parentElement.removeChild(this._shadeRow);
+          }
+          if(newShadeRow){
+            this._shadeRow = newShadeRow;
+          }
+        }
       }
+      else{
+        this._dragZoneElem.classList.remove('old-element');
+        this._shadeElement.style.display = 'none';
+        if(this._shadeRow) {
+          this._shadeRow.style.display = 'none';
+        }
+      }
+
       /*
       if(target.classList.contains('row') && // навели на строку - вставляем в конец,
         target.tagName === 'DIV' &&          // но только если вставляемый элемент не был в конце
         target.lastElementChild !== this._dragZoneElem) {
             this._currentTargetRow = target;
-            this._currentTargetRowColumnElemnt = null;
+            this._currentTargetRowColumnElement = null;
             this._currentTargetRow.appendChild(this._shadeElement);
             this._shadeElement.style.display = 'block';
             this._dragZoneElem.classList.add('old-element');
@@ -70,17 +133,17 @@ module BootstrapDragAndDrop {
         target.tagName === 'DIV' &&
         target !== this._dragZoneElem &&              // но только если навели не на самого себя
         target.previousElementSibling !== this._dragZoneElem) {  // и если вставляемый элемент не был до этого перед ним
-            this._currentTargetRowColumnElemnt = target;
+            this._currentTargetRowColumnElement = target;
             this._currentTargetRow = <DragAndDrop.HTMLElementWithDropTarget> target.parentElement;
-            this._currentTargetRow.insertBefore(this._shadeElement, this._currentTargetRowColumnElemnt);
+            this._currentTargetRow.insertBefore(this._shadeElement, this._currentTargetRowColumnElement);
             this._shadeElement.style.display = 'block';
             this._dragZoneElem.classList.add('old-element');
       }
-      else {*/
+      else {
             this._shadeElement.style.display = 'none';
             this._dragZoneElem.classList.remove('old-element');
             document.body.appendChild(this._shadeElement);
-      /*}*/
+      }*/
 
     }
 
@@ -105,11 +168,11 @@ module BootstrapDragAndDrop {
       this._destroy();
     }
 
-    getDragInfo(event:MouseEvent):BootstrapDragInfo {
+    getDragInfo(event:MouseEvent): BootstrapDragInfo {
       // тут может быть еще какая-то информация, необходимая для обработки конца или процесса переноса
       return new BootstrapDragInfo(
-        this._currentTargetRow,
-        this._currentTargetRowColumnElemnt,
+        //this._currentTargetRow,
+        //this._currentTargetRowColumnElemnt,
         this._shadeElement,
         this._elem,
         this._dragZoneElem,
@@ -123,15 +186,15 @@ module BootstrapDragAndDrop {
     public currentTargetRowColumnElemnt: DragAndDrop.HTMLElementWithDropTarget; // другой элемент текущей строки, над которым мы находимся
     public shadeElement : HTMLElement;
 
-    constructor(currentTargetRow: DragAndDrop.HTMLElementWithDropTarget,
-                currentTargetRowColumnElemnt: DragAndDrop.HTMLElementWithDropTarget,
+    constructor(//currentTargetRow: DragAndDrop.HTMLElementWithDropTarget,
+                //currentTargetRowColumnElemnt: DragAndDrop.HTMLElementWithDropTarget,
                 shadeElement : HTMLElement,
                 elem:HTMLElement,
                 dragZoneElem: HTMLElement,
                 dragZone: DragAndDrop.DragZone) {
         super(elem, dragZoneElem, dragZone);
-        this.currentTargetRow = currentTargetRow;
-        this.currentTargetRowColumnElemnt = currentTargetRowColumnElemnt;
+        //this.currentTargetRow = currentTargetRow;
+        //this.currentTargetRowColumnElemnt = currentTargetRowColumnElemnt;
         this.shadeElement = shadeElement;
     }
   }
